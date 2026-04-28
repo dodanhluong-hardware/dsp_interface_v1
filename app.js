@@ -10,6 +10,7 @@ const btNameInput = document.getElementById('bt-name');
 const bleNameInput = document.getElementById('ble-name');
 const chipDevice = document.getElementById('chip-device');
 const btnSidebarToggle = document.getElementById('btn-sidebar-toggle');
+const sidebarBackdrop = document.getElementById('sidebar-backdrop');
 const preampBandChips = document.querySelectorAll('.band-chip[data-band]');
 const preampTableBody = document.getElementById('eq-table-body');
 const eqSvgL = document.querySelector('#eq-path-l')?.ownerSVGElement || null;
@@ -54,25 +55,19 @@ function setDragScrollLock(locked) {
     document.body.classList.remove('drag-scroll-lock');
   }
 }
-const SIDEBAR_COLLAPSE_KEY = 'dsp_sidebar_collapsed';
-
-function applySidebarCollapsed(collapsed) {
-  document.body.classList.toggle('sidebar-collapsed', collapsed);
-}
-
-function restoreSidebarState() {
-  const collapsed = localStorage.getItem(SIDEBAR_COLLAPSE_KEY) === '1';
-  applySidebarCollapsed(collapsed);
+function setSidebarOpen(open) {
+  document.body.classList.toggle('sidebar-open', open);
 }
 
 if (btnSidebarToggle) {
   btnSidebarToggle.addEventListener('click', () => {
-    const next = !document.body.classList.contains('sidebar-collapsed');
-    applySidebarCollapsed(next);
-    localStorage.setItem(SIDEBAR_COLLAPSE_KEY, next ? '1' : '0');
+    const next = !document.body.classList.contains('sidebar-open');
+    setSidebarOpen(next);
   });
 }
-restoreSidebarState();
+if (sidebarBackdrop) {
+  sidebarBackdrop.addEventListener('click', () => setSidebarOpen(false));
+}
 
 
 tabs.forEach((tab) => {
@@ -83,6 +78,7 @@ tabs.forEach((tab) => {
     tab.classList.add('active');
     const panel = document.getElementById(target);
     if (panel) panel.classList.add('active');
+    setSidebarOpen(false);
   });
 });
 

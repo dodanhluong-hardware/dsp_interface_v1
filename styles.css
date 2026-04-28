@@ -79,16 +79,47 @@ body.drag-scroll-lock {
 
 .layout {
   display: grid;
-  grid-template-columns: 230px 1fr;
+  grid-template-columns: 1fr;
   min-height: calc(100vh - 138px);
-  transition: grid-template-columns 180ms ease;
 }
 
 .sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: min(84vw, 320px);
+  z-index: 1200;
   padding: 14px;
   border-right: 1px solid var(--line);
   background: #e7ecf4;
-  transition: all 180ms ease;
+  transition: transform 180ms ease, opacity 180ms ease;
+  overflow: hidden;
+  transform: translateX(-108%);
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 10px 0 30px rgba(14, 27, 49, 0.25);
+  padding-top: 84px;
+}
+.sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgba(9, 18, 31, 0.32);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 180ms ease;
+}
+.sidebar-open .sidebar {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+.sidebar-open .sidebar-backdrop {
+  opacity: 1;
+  pointer-events: auto;
+}
+.sidebar-open {
   overflow: hidden;
 }
 .tab {
@@ -109,15 +140,6 @@ body.drag-scroll-lock {
 }
 
 main { padding: 16px; }
-.sidebar-collapsed .layout {
-  grid-template-columns: 0 1fr;
-}
-.sidebar-collapsed .sidebar {
-  padding: 0;
-  border-right: 0;
-  opacity: 0;
-  pointer-events: none;
-}
 .panel { display: none; }
 .panel.active { display: block; }
 h2 { margin-top: 0; }
