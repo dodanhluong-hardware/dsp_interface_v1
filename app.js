@@ -47,6 +47,13 @@ const preampBands = [
 ];
 let draggingBandId = null;
 let isDragging = false;
+function setDragScrollLock(locked) {
+  if (locked) {
+    document.body.classList.add('drag-scroll-lock');
+  } else {
+    document.body.classList.remove('drag-scroll-lock');
+  }
+}
 const SIDEBAR_COLLAPSE_KEY = 'dsp_sidebar_collapsed';
 
 function applySidebarCollapsed(collapsed) {
@@ -554,18 +561,7 @@ if (preampTableBody) {
 }
 
 if (eqSvgL) {
-  eqSvgL.addEventListener('mousedown', (event) => {
-    const target = event.target;
-    if (!(target instanceof SVGCircleElement)) return;
-    const bandId = Number(target.getAttribute('data-band'));
-    if (Number.isNaN(bandId)) return;
-    draggingBandId = bandId;
-    isDragging = true;
-    target.classList.add('dragging');
-    event.preventDefault();
-  });
-
-  window.addEventListener('mousemove', (event) => {
+  const onEqDragMove = (event) => {
     if (!isDragging || draggingBandId === null || !eqSvgL) return;
     const band = preampBands[draggingBandId];
     if (!band || !band.active) return;
@@ -581,16 +577,52 @@ if (eqSvgL) {
     renderEqLine('l');
     updatePreampRowFields(draggingBandId);
     setTxStatus('DRAG EQ', 'ok');
-  });
+    event.preventDefault();
+  };
 
-  window.addEventListener('mouseup', () => {
+  const stopEqDrag = () => {
     if (!isDragging || draggingBandId === null) return;
     sendTx(`drag_F${draggingBandId}_ok`);
     draggingBandId = null;
     isDragging = false;
+    setDragScrollLock(false);
     document.querySelectorAll('#eq-points-l circle.dragging').forEach((c) => c.classList.remove('dragging'));
+  };
+
+  eqSvgL.addEventListener('pointerdown', (event) => {
+    const target = event.target;
+    if (!(target instanceof SVGCircleElement)) return;
+    const bandId = Number(target.getAttribute('data-band'));
+    if (Number.isNaN(bandId)) return;
+    draggingBandId = bandId;
+    isDragging = true;
+    target.classList.add('dragging');
+    setDragScrollLock(true);
+    if (typeof target.setPointerCapture === 'function') {
+      target.setPointerCapture(event.pointerId);
+    }
+    event.preventDefault();
   });
+
+  window.addEventListener('pointermove', onEqDragMove, { passive: false });
+  window.addEventListener('pointerup', stopEqDrag);
+  window.addEventListener('pointercancel', stopEqDrag);
 }
+
+document.querySelectorAll('input[type="range"]').forEach((slider) => {
+  slider.addEventListener('pointerdown', () => setDragScrollLock(true));
+  slider.addEventListener('pointerup', () => setDragScrollLock(false));
+  slider.addEventListener('pointercancel', () => setDragScrollLock(false));
+});
+window.addEventListener('pointerup', () => {
+  if (!isDragging) setDragScrollLock(false);
+});
+window.addEventListener('pointercancel', () => {
+  if (!isDragging) setDragScrollLock(false);
+});
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) setDragScrollLock(false);
+});
 
 if (btNameInput) {
   btNameInput.addEventListener('change', () => {

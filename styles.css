@@ -18,6 +18,10 @@ body {
   background: var(--bg);
   padding-bottom: 64px;
 }
+body.drag-scroll-lock {
+  overflow: hidden;
+  touch-action: none;
+}
 
 .topbar {
   display: flex;
@@ -157,6 +161,7 @@ input[type="range"] {
   background: transparent;
   border: 0;
   cursor: pointer;
+  touch-action: none;
 }
 input[type="range"]::-webkit-slider-runnable-track {
   height: 8px;
@@ -218,6 +223,7 @@ button.danger {
     linear-gradient(180deg, #1d2f4d, #152541 78%);
   margin-bottom: 12px;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -10px 24px rgba(0, 0, 0, 0.28);
+  touch-action: none;
 }
 .eq-graph.v41 {
   height: 300px;
@@ -460,6 +466,7 @@ button.danger {
   vector-effect: non-scaling-stroke;
   cursor: grab;
   filter: drop-shadow(0 0 3px rgba(129, 191, 255, 0.45));
+  touch-action: none;
 }
 #eq-points-l circle.dragging { cursor: grabbing; }
 .eq-point-tag {
