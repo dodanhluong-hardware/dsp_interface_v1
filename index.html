@@ -93,10 +93,9 @@
           </details>
 
           <details class="card" open>
-            <summary>Dynamic EQ + DRC + Limiter</summary>
+            <summary>Dynamic EQ</summary>
             <div class="dynamics-wrap">
               <div class="dyn-card">
-                <h4>Dynamic EQ</h4>
                 <div class="grid three">
                   <label>DynEQ HP Freq<input id="dyn-hp-freq" type="range" min="50" max="8000" value="1200" /></label>
                   <label>DynEQ LP Freq<input id="dyn-lp-freq" type="range" min="200" max="12000" value="5000" /></label>
@@ -106,9 +105,13 @@
                   <label>DynEQ Release<input id="dyn-rel" type="range" min="10" max="1000" value="180" /></label>
                 </div>
               </div>
+            </div>
+          </details>
 
+          <details class="card" open>
+            <summary>DRC + Limiter</summary>
+            <div class="dynamics-wrap">
               <div class="dyn-card">
-                <h4>DRC</h4>
                 <div class="drc-layout">
                   <div class="drc-graph" id="drc-graph">
                     <svg viewBox="0 0 100 100" preserveAspectRatio="none">
@@ -149,13 +152,6 @@
             </div>
           </details>
 
-          <details class="card" open>
-            <summary>Meter</summary>
-            <div class="grid two">
-              <div><div class="meter"><span style="width: 64%"></span></div><small>L Out -6.1 dBFS</small></div>
-              <label>Phase<select><option>0°</option><option>180°</option></select></label>
-            </div>
-          </details>
         </div>
       </section>
 
