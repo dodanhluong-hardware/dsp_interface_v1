@@ -145,12 +145,12 @@ main { padding: 16px; }
 .panel.active { display: block; }
 h2 { margin-top: 0; }
 
-.block-grid { display: grid; gap: 16px; }
+.block-grid { display: grid; gap: 20px; }
 .card {
   border: 1px solid var(--line);
   border-radius: 14px;
   background: var(--surface-2);
-  padding: 14px;
+  padding: 16px;
 }
 summary {
   cursor: pointer;
@@ -158,7 +158,7 @@ summary {
   margin-bottom: 10px;
 }
 
-.grid { display: grid; gap: 14px; }
+.grid { display: grid; gap: 16px; }
 .grid.one { grid-template-columns: 1fr; }
 .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
