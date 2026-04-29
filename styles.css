@@ -658,6 +658,119 @@ button.danger {
   background: #fff;
 }
 
+@media (max-width: 1024px) {
+  .topbar {
+    padding: 10px 12px;
+  }
+  .topbar h1 {
+    font-size: 30px;
+  }
+  .topbar p {
+    font-size: 20px;
+  }
+  main {
+    padding: 12px;
+  }
+  .card {
+    padding: 14px;
+  }
+  .eq-chart {
+    grid-template-columns: 56px 1fr;
+    gap: 8px;
+  }
+  .eq-graph.v41 {
+    height: 280px;
+  }
+  .eq-table {
+    overflow-x: auto;
+  }
+  .eq-table-head,
+  .eq-table-row {
+    min-width: 760px;
+  }
+  .drc-layout {
+    grid-template-columns: 1fr;
+  }
+  .drc-graph {
+    height: 320px;
+    min-height: 320px;
+    max-height: 320px;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    padding-bottom: 88px;
+  }
+  .topbar {
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .topbar-left {
+    gap: 8px;
+  }
+  .topbar h1 {
+    font-size: 26px;
+  }
+  .topbar p {
+    font-size: 16px;
+  }
+  .status-wrap {
+    width: 100%;
+    gap: 6px;
+  }
+  .chip {
+    font-size: 11px;
+    padding: 5px 8px;
+  }
+  .block-grid {
+    gap: 14px;
+  }
+  .grid.two,
+  .grid.three {
+    grid-template-columns: 1fr;
+  }
+  .eq-panel {
+    padding: 10px;
+  }
+  .eq-graph.v41 {
+    height: 220px;
+  }
+  .db-axis,
+  .freq-row {
+    font-size: 10px;
+  }
+  .band-chip-row {
+    gap: 6px;
+  }
+  .band-chip {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  .dyn-faders {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    padding: 10px;
+  }
+  .dyn-fader {
+    min-height: 250px;
+    padding: 8px;
+  }
+  .dyn-fader-rail {
+    height: 185px;
+  }
+  .dyn-fader input[type="range"] {
+    width: 170px;
+    height: 26px;
+  }
+  .drc-controls {
+    grid-template-columns: 1fr;
+  }
+  .bottom-bar {
+    padding: 10px 12px;
+  }
+}
+
 .row {
   display: flex;
   gap: 8px;
