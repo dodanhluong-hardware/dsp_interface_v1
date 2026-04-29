@@ -16,6 +16,7 @@ body {
   margin: 0;
   color: var(--text);
   font-family: "Segoe UI", Tahoma, sans-serif;
+  font-size: 17px;
   background: var(--bg);
   padding-bottom: 64px;
 }
@@ -38,8 +39,8 @@ body.drag-scroll-lock {
   align-items: center;
   gap: 10px;
 }
-.topbar h1 { margin: 0; }
-.topbar p { margin: 2px 0 0; color: var(--muted); }
+.topbar h1 { margin: 0; font-size: 44px; }
+.topbar p { margin: 2px 0 0; color: var(--muted); font-size: 20px; }
 .icon-btn {
   width: 38px;
   height: 38px;
@@ -131,7 +132,8 @@ body.drag-scroll-lock {
   border: 1px solid var(--line);
   background: #ffffff;
   color: var(--text);
-  padding: 11px;
+  padding: 12px 13px;
+  font-size: 24px;
   cursor: pointer;
 }
 .tab.active {
@@ -144,6 +146,7 @@ main { padding: 16px; }
 .panel { display: none; }
 .panel.active { display: block; }
 h2 { margin-top: 0; }
+h2 { font-size: 40px; }
 
 .block-grid { display: grid; gap: 20px; }
 .card {
@@ -156,6 +159,7 @@ summary {
   cursor: pointer;
   font-weight: 600;
   margin-bottom: 10px;
+  font-size: 32px;
 }
 
 .grid { display: grid; gap: 16px; }
@@ -374,11 +378,11 @@ button.danger {
   gap: 12px;
   align-items: stretch;
   padding: 14px;
-  border: 1px solid #273e64;
+  border: 1px solid #46689b;
   border-radius: 14px;
   background:
-    radial-gradient(120% 90% at 50% 0%, rgba(100, 160, 255, 0.25), transparent 55%),
-    linear-gradient(180deg, #162845 0%, #111f38 70%, #0f1b31 100%);
+    radial-gradient(120% 90% at 50% 0%, rgba(138, 192, 255, 0.42), transparent 58%),
+    linear-gradient(180deg, #27406b 0%, #203559 65%, #1b2d4f 100%);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
     inset 0 -20px 40px rgba(0, 0, 0, 0.35);
@@ -389,13 +393,13 @@ button.danger {
   grid-template-rows: auto 1fr;
   justify-items: stretch;
   gap: 10px;
-  color: #cfe4ff;
+  color: #e6f3ff;
   font-size: 12px;
   font-weight: 700;
   padding: 12px 10px 10px;
-  border: 1px solid rgba(120, 170, 245, 0.28);
+  border: 1px solid rgba(166, 201, 250, 0.38);
   border-radius: 14px;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.02));
+  background: linear-gradient(180deg, rgba(240, 248, 255, 0.16), rgba(231, 242, 255, 0.08));
   min-height: 470px;
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.1),
@@ -406,7 +410,7 @@ button.danger {
   width: 100%;
   text-align: center;
   justify-self: center;
-  color: #d9ebff;
+  color: #f0f8ff;
   letter-spacing: 0.5px;
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
   font-size: 13px;
@@ -416,8 +420,8 @@ button.danger {
   width: 100%;
   height: 390px;
   border-radius: 10px;
-  background: linear-gradient(180deg, rgba(150, 190, 255, 0.08), rgba(80, 130, 220, 0.05));
-  border: 1px solid rgba(130, 178, 245, 0.22);
+  background: linear-gradient(180deg, rgba(182, 214, 255, 0.18), rgba(128, 177, 243, 0.1));
+  border: 1px solid rgba(167, 204, 250, 0.34);
   overflow: hidden;
 }
 .dyn-fader input[type="range"] {
