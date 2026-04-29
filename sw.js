@@ -1,4 +1,4 @@
-﻿const CACHE_NAME = 'dsp-interface-v1-cache';
+﻿const CACHE_NAME = 'dsp-interface-v2-cache';
 const ASSETS = [
   './',
   './index.html',
@@ -22,6 +22,30 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+
+  const reqUrl = new URL(event.request.url);
+  const isAppAsset =
+    reqUrl.origin === self.location.origin &&
+    (reqUrl.pathname.endsWith('/') ||
+      reqUrl.pathname.endsWith('/index.html') ||
+      reqUrl.pathname.endsWith('/styles.css') ||
+      reqUrl.pathname.endsWith('/app.js') ||
+      reqUrl.pathname.endsWith('/manifest.webmanifest') ||
+      reqUrl.pathname.endsWith('/pwa-icon.svg'));
+
+  if (isAppAsset) {
+    event.respondWith(
+      fetch(event.request, { cache: 'no-store' })
+        .then((response) => {
+          const cloned = response.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(event.request, cloned));
+          return response;
+        })
+        .catch(() => caches.match(event.request).then((cached) => cached || caches.match('./index.html')))
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((cached) => {
       if (cached) return cached;
