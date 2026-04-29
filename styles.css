@@ -698,6 +698,9 @@ button.danger {
   background: linear-gradient(180deg, #f3f8ff, #e7f0ff);
   box-shadow: 0 8px 22px rgba(19, 52, 99, 0.18);
 }
+.pwa-bar.is-hidden {
+  display: none !important;
+}
 .pwa-text {
   color: #244166;
   font-weight: 600;

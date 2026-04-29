@@ -14,6 +14,7 @@ const sidebarBackdrop = document.getElementById('sidebar-backdrop');
 const pwaBar = document.getElementById('pwa-bar');
 const btnPwaInstall = document.getElementById('btn-pwa-install');
 const btnPwaClose = document.getElementById('btn-pwa-close');
+const PWA_BAR_CLOSED_KEY = 'pwa_bar_closed';
 const preampBandChips = document.querySelectorAll('.band-chip[data-band]');
 const preampTableBody = document.getElementById('eq-table-body');
 const eqSvgL = document.querySelector('#eq-path-l')?.ownerSVGElement || null;
@@ -32,6 +33,7 @@ const drcParams = [
 let connected = true;
 let lastTx = '';
 let deferredInstallPrompt = null;
+let pwaBarClosedByUser = localStorage.getItem(PWA_BAR_CLOSED_KEY) === '1';
 const DB_MIN = -12;
 const DB_MAX = 12;
 const CHART_H = 30;
@@ -118,11 +120,28 @@ function sendTx(tag) {
 function hidePwaBar() {
   if (!pwaBar) return;
   pwaBar.hidden = true;
+  pwaBar.classList.add('is-hidden');
+}
+
+function isRunningAsInstalledApp() {
+  const mm = (q) => window.matchMedia && window.matchMedia(q).matches;
+  const iosStandalone = typeof navigator.standalone === 'boolean' ? navigator.standalone : false;
+  return (
+    mm('(display-mode: standalone)') ||
+    mm('(display-mode: window-controls-overlay)') ||
+    mm('(display-mode: fullscreen)') ||
+    mm('(display-mode: minimal-ui)') ||
+    iosStandalone ||
+    document.referrer.startsWith('android-app://')
+  );
 }
 
 function showPwaBar() {
   if (!pwaBar) return;
-  if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) return;
+  if (pwaBarClosedByUser) return;
+  if (isRunningAsInstalledApp()) return;
+  if (location.protocol === 'file:') return;
+  pwaBar.classList.remove('is-hidden');
   pwaBar.hidden = false;
 }
 
@@ -680,7 +699,13 @@ if ('serviceWorker' in navigator) {
 
 window.addEventListener('beforeinstallprompt', (event) => {
   event.preventDefault();
+  if (isRunningAsInstalledApp()) {
+    hidePwaBar();
+    return;
+  }
   deferredInstallPrompt = event;
+  pwaBarClosedByUser = false;
+  localStorage.removeItem(PWA_BAR_CLOSED_KEY);
   showPwaBar();
 });
 
@@ -691,7 +716,15 @@ window.addEventListener('appinstalled', () => {
 
 if (btnPwaInstall) {
   btnPwaInstall.addEventListener('click', async () => {
-    if (!deferredInstallPrompt) return;
+    if (!deferredInstallPrompt) {
+      const secure = window.isSecureContext || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+      if (!secure) {
+        alert('PWA chi ho tro tren HTTPS hoac localhost.');
+      } else {
+        alert('Trinh duyet chua cho phep Install Prompt. Thu reload trang, hoac vao menu trinh duyet -> Save and share -> Install page as app.');
+      }
+      return;
+    }
     deferredInstallPrompt.prompt();
     try {
       await deferredInstallPrompt.userChoice;
@@ -705,12 +738,13 @@ if (btnPwaInstall) {
 
 if (btnPwaClose) {
   btnPwaClose.addEventListener('click', () => {
+    pwaBarClosedByUser = true;
+    localStorage.setItem(PWA_BAR_CLOSED_KEY, '1');
     hidePwaBar();
-    localStorage.setItem('pwa_bar_closed', '1');
   });
 }
 
-if (localStorage.getItem('pwa_bar_closed') !== '1' && !window.matchMedia('(display-mode: standalone)').matches) {
+if (!pwaBarClosedByUser && !isRunningAsInstalledApp() && location.protocol !== 'file:') {
   setTimeout(() => {
     if (!deferredInstallPrompt) showPwaBar();
   }, 1200);
