@@ -1,0 +1,16 @@
+﻿{
+  "name": "DSP Tool",
+  "short_name": "DSP Tool",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#c7d0dc",
+  "theme_color": "#1f3d66",
+  "icons": [
+    {
+      "src": "./pwa-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -359,13 +359,13 @@ button.danger {
 
 .dynamics-wrap {
   display: grid;
-  gap: 8px;
+  gap: 12px;
 }
 .dyn-card {
-  border: 1px solid #bccae1;
-  border-radius: 10px;
-  background: #eef3fb;
-  padding: 6px;
+  border: 1px solid #b8c9e2;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #edf3fb, #e9f0fa);
+  padding: 10px;
 }
 .dyn-card h4 {
   margin: 0 0 5px;
@@ -377,15 +377,15 @@ button.danger {
   grid-template-columns: repeat(6, minmax(150px, 1fr));
   gap: 12px;
   align-items: stretch;
-  padding: 14px;
-  border: 1px solid #46689b;
+  padding: 12px;
+  border: 1px solid #5f80b0;
   border-radius: 14px;
   background:
-    radial-gradient(120% 90% at 50% 0%, rgba(138, 192, 255, 0.42), transparent 58%),
-    linear-gradient(180deg, #27406b 0%, #203559 65%, #1b2d4f 100%);
+    radial-gradient(120% 95% at 50% 0%, rgba(172, 214, 255, 0.45), transparent 60%),
+    linear-gradient(180deg, #2d4875 0%, #274067 65%, #213657 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    inset 0 -20px 40px rgba(0, 0, 0, 0.35);
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -10px 24px rgba(10, 26, 48, 0.28);
   overflow: hidden;
 }
 .dyn-fader {
@@ -394,34 +394,34 @@ button.danger {
   justify-items: stretch;
   gap: 10px;
   color: #e6f3ff;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
-  padding: 12px 10px 10px;
-  border: 1px solid rgba(166, 201, 250, 0.38);
+  padding: 10px 10px 10px;
+  border: 1px solid rgba(178, 210, 252, 0.4);
   border-radius: 14px;
-  background: linear-gradient(180deg, rgba(240, 248, 255, 0.16), rgba(231, 242, 255, 0.08));
-  min-height: 470px;
+  background: linear-gradient(180deg, rgba(245, 252, 255, 0.18), rgba(236, 246, 255, 0.08));
+  min-height: 410px;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.1),
-    0 8px 16px rgba(7, 19, 38, 0.28);
+    inset 0 1px 0 rgba(255,255,255,0.16),
+    0 4px 10px rgba(18, 42, 78, 0.18);
 }
 .dyn-fader > span {
   display: block;
   width: 100%;
   text-align: center;
   justify-self: center;
-  color: #f0f8ff;
+  color: #eaf6ff;
   letter-spacing: 0.5px;
   text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
-  font-size: 13px;
+  font-size: 14px;
 }
 .dyn-fader-rail {
   position: relative;
   width: 100%;
-  height: 390px;
+  height: 320px;
   border-radius: 10px;
-  background: linear-gradient(180deg, rgba(182, 214, 255, 0.18), rgba(128, 177, 243, 0.1));
-  border: 1px solid rgba(167, 204, 250, 0.34);
+  background: linear-gradient(180deg, rgba(189, 220, 255, 0.2), rgba(138, 186, 247, 0.12));
+  border: 1px solid rgba(170, 206, 250, 0.4);
   overflow: hidden;
 }
 .dyn-fader input[type="range"] {
@@ -430,12 +430,12 @@ button.danger {
   top: 50%;
   transform: translate(-50%, -50%) rotate(-90deg);
   transform-origin: center center;
-  width: 360px;
-  height: 34px;
+  width: 300px;
+  height: 30px;
   margin: 0;
 }
 .dyn-fader input[type="range"]::-webkit-slider-runnable-track {
-  height: 14px;
+  height: 12px;
   border-radius: 999px;
   background:
     linear-gradient(90deg, rgba(68, 191, 255, 0.98), rgba(72, 126, 255, 0.98));
@@ -443,23 +443,23 @@ button.danger {
     inset 0 1px 0 rgba(232, 246, 255, 0.45),
     inset 0 -1px 0 rgba(0, 0, 0, 0.2),
     inset 0 0 0 1px rgba(145, 198, 255, 0.35),
-    0 0 18px rgba(67, 149, 255, 0.45);
+    0 0 12px rgba(67, 149, 255, 0.35);
 }
 .dyn-fader input[type="range"]::-webkit-slider-thumb {
-  width: 40px;
-  height: 40px;
-  margin-top: -13px;
+  width: 34px;
+  height: 34px;
+  margin-top: -11px;
   border-radius: 50%;
   border: 2px solid rgba(225, 242, 255, 0.98);
   background: radial-gradient(circle at 30% 30%, #f7fcff 0%, #9ad4ff 45%, #4e95ff 100%);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.7),
-    0 0 0 3px rgba(78, 161, 255, 0.38),
-    0 8px 18px rgba(10, 29, 61, 0.45),
-    0 0 22px rgba(92, 170, 255, 0.72);
+    0 0 0 2px rgba(78, 161, 255, 0.34),
+    0 5px 12px rgba(10, 29, 61, 0.33),
+    0 0 14px rgba(92, 170, 255, 0.58);
 }
 .dyn-fader input[type="range"]::-moz-range-track {
-  height: 14px;
+  height: 12px;
   border-radius: 999px;
   background:
     linear-gradient(90deg, rgba(68, 191, 255, 0.98), rgba(72, 126, 255, 0.98));
@@ -467,19 +467,19 @@ button.danger {
     inset 0 1px 0 rgba(232, 246, 255, 0.45),
     inset 0 -1px 0 rgba(0, 0, 0, 0.2),
     inset 0 0 0 1px rgba(145, 198, 255, 0.35),
-    0 0 18px rgba(67, 149, 255, 0.45);
+    0 0 12px rgba(67, 149, 255, 0.35);
 }
 .dyn-fader input[type="range"]::-moz-range-thumb {
-  width: 40px;
-  height: 40px;
+  width: 34px;
+  height: 34px;
   border: 2px solid rgba(225, 242, 255, 0.98);
   border-radius: 50%;
   background: radial-gradient(circle at 30% 30%, #f7fcff 0%, #9ad4ff 45%, #4e95ff 100%);
   box-shadow:
     inset 0 1px 0 rgba(255,255,255,0.7),
-    0 0 0 3px rgba(78, 161, 255, 0.38),
-    0 8px 18px rgba(10, 29, 61, 0.45),
-    0 0 22px rgba(92, 170, 255, 0.72);
+    0 0 0 2px rgba(78, 161, 255, 0.34),
+    0 5px 12px rgba(10, 29, 61, 0.33),
+    0 0 14px rgba(92, 170, 255, 0.58);
 }
 
 .drc-layout {
@@ -680,6 +680,49 @@ button.danger {
   padding: 8px 14px;
   border-top: 1px solid var(--line);
   background: #ffffff;
+}
+
+.pwa-bar {
+  position: fixed;
+  left: 14px;
+  right: 14px;
+  bottom: 64px;
+  z-index: 1300;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid #9eb7dc;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #f3f8ff, #e7f0ff);
+  box-shadow: 0 8px 22px rgba(19, 52, 99, 0.18);
+}
+.pwa-text {
+  color: #244166;
+  font-weight: 600;
+  font-size: 14px;
+}
+.pwa-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pwa-install-btn,
+.pwa-close-btn {
+  border-radius: 10px;
+  padding: 8px 12px;
+  font-weight: 700;
+}
+.pwa-install-btn {
+  color: #fff;
+  background: linear-gradient(120deg, #2f79ec, #5da2ff);
+  border: 1px solid #3d83ef;
+}
+.pwa-close-btn {
+  color: #3a5275;
+  background: #ffffff;
+  border: 1px solid #bbcae0;
 }
 .save-btn {
   min-width: 84px;

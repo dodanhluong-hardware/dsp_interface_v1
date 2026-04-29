@@ -11,6 +11,9 @@ const bleNameInput = document.getElementById('ble-name');
 const chipDevice = document.getElementById('chip-device');
 const btnSidebarToggle = document.getElementById('btn-sidebar-toggle');
 const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+const pwaBar = document.getElementById('pwa-bar');
+const btnPwaInstall = document.getElementById('btn-pwa-install');
+const btnPwaClose = document.getElementById('btn-pwa-close');
 const preampBandChips = document.querySelectorAll('.band-chip[data-band]');
 const preampTableBody = document.getElementById('eq-table-body');
 const eqSvgL = document.querySelector('#eq-path-l')?.ownerSVGElement || null;
@@ -28,6 +31,7 @@ const drcParams = [
 
 let connected = true;
 let lastTx = '';
+let deferredInstallPrompt = null;
 const DB_MIN = -12;
 const DB_MAX = 12;
 const CHART_H = 30;
@@ -109,6 +113,17 @@ function sendTx(tag) {
   }
   lastTx = tag;
   setTxStatus('TX OK', 'ok');
+}
+
+function hidePwaBar() {
+  if (!pwaBar) return;
+  pwaBar.hidden = true;
+}
+
+function showPwaBar() {
+  if (!pwaBar) return;
+  if (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) return;
+  pwaBar.hidden = false;
 }
 
 function renderEqLine(target) {
@@ -656,6 +671,50 @@ drcParams.forEach((el) => {
   });
   el.addEventListener('change', () => updateDrcCurve());
 });
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  });
+}
+
+window.addEventListener('beforeinstallprompt', (event) => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  showPwaBar();
+});
+
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  hidePwaBar();
+});
+
+if (btnPwaInstall) {
+  btnPwaInstall.addEventListener('click', async () => {
+    if (!deferredInstallPrompt) return;
+    deferredInstallPrompt.prompt();
+    try {
+      await deferredInstallPrompt.userChoice;
+    } catch (_) {
+      // no-op
+    }
+    deferredInstallPrompt = null;
+    hidePwaBar();
+  });
+}
+
+if (btnPwaClose) {
+  btnPwaClose.addEventListener('click', () => {
+    hidePwaBar();
+    localStorage.setItem('pwa_bar_closed', '1');
+  });
+}
+
+if (localStorage.getItem('pwa_bar_closed') !== '1' && !window.matchMedia('(display-mode: standalone)').matches) {
+  setTimeout(() => {
+    if (!deferredInstallPrompt) showPwaBar();
+  }, 1200);
+}
 
 renderEqLine('l');
 renderEqLine('mic');
