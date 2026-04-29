@@ -166,6 +166,59 @@ summary {
 .grid.one { grid-template-columns: 1fr; }
 .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.output-control-card .grid {
+  max-width: 1120px;
+  margin: 0 auto;
+}
+.output-control-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: #2a4366;
+  font-weight: 700;
+}
+.output-control-card input[type="range"] {
+  height: 24px;
+}
+.output-control-card input[type="range"]::-webkit-slider-runnable-track {
+  height: 12px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #0a172e 0%, #11203b 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(102, 132, 176, 0.42);
+}
+.output-control-card input[type="range"]::-webkit-slider-thumb {
+  width: 34px;
+  height: 20px;
+  margin-top: -4px;
+  border-radius: 2px;
+  border: 1px solid #8fb5d8;
+  background: linear-gradient(180deg, #f2f8ff 0%, #d7e8fa 35%, #9ebfdf 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.75),
+    0 1px 3px rgba(7, 17, 33, 0.5);
+}
+.output-control-card input[type="range"]::-moz-range-track {
+  height: 12px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #0a172e 0%, #11203b 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(102, 132, 176, 0.42);
+}
+.output-control-card input[type="range"]::-moz-range-thumb {
+  width: 34px;
+  height: 20px;
+  border: 1px solid #8fb5d8;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #f2f8ff 0%, #d7e8fa 35%, #9ebfdf 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.75),
+    0 1px 3px rgba(7, 17, 33, 0.5);
+}
 
 label {
   display: grid;
@@ -374,36 +427,40 @@ button.danger {
 }
 .dyn-faders {
   display: grid;
-  grid-template-columns: repeat(6, minmax(150px, 1fr));
-  gap: 10px;
-  align-items: stretch;
+  grid-template-columns: repeat(6, minmax(92px, 1fr));
+  gap: 12px;
+  align-items: start;
+  justify-items: center;
+  justify-content: center;
   padding: 10px;
-  border: 1px solid #6f95cb;
+  border: 1px solid #7ea5d9;
   border-radius: 14px;
   background:
-    radial-gradient(120% 95% at 50% 0%, rgba(192, 225, 255, 0.55), transparent 60%),
-    linear-gradient(180deg, #36578a 0%, #2f4c79 65%, #284265 100%);
+    radial-gradient(120% 95% at 50% 0%, rgba(209, 233, 255, 0.48), transparent 62%),
+    linear-gradient(180deg, #43679a 0%, #3a5d8d 62%, #314f7a 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.16),
-    inset 0 -8px 18px rgba(10, 26, 48, 0.20);
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -6px 14px rgba(10, 26, 48, 0.16);
   overflow: hidden;
 }
 .dyn-fader {
   display: grid;
   grid-template-rows: auto 1fr;
-  justify-items: stretch;
+  justify-items: center;
   gap: 8px;
-  color: #e6f3ff;
+  color: #eef7ff;
   font-size: 12px;
   font-weight: 700;
-  padding: 8px;
-  border: 1px solid rgba(188, 218, 255, 0.45);
+  padding: 8px 6px 6px;
+  border: 1px solid rgba(196, 223, 255, 0.52);
   border-radius: 12px;
-  background: linear-gradient(180deg, rgba(248, 253, 255, 0.20), rgba(238, 248, 255, 0.10));
-  min-height: 340px;
+  background: linear-gradient(180deg, rgba(248, 253, 255, 0.17), rgba(236, 247, 255, 0.08));
+  width: 100%;
+  max-width: 174px;
+  min-height: 455px;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.18),
-    0 3px 8px rgba(18, 42, 78, 0.14);
+    inset 0 1px 0 rgba(255,255,255,0.2),
+    0 2px 6px rgba(18, 42, 78, 0.11);
 }
 .dyn-fader > span {
   display: block;
@@ -417,12 +474,16 @@ button.danger {
 }
 .dyn-fader-rail {
   position: relative;
-  width: 100%;
-  height: 260px;
+  width: 88%;
+  max-width: 116px;
+  height: 390px;
   border-radius: 10px;
-  background: linear-gradient(180deg, rgba(201, 228, 255, 0.22), rgba(151, 198, 255, 0.14));
-  border: 1px solid rgba(181, 214, 255, 0.42);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
+    linear-gradient(180deg, #314d78 0%, #273f64 100%);
+  border: 1px solid rgba(169, 201, 241, 0.38);
   overflow: hidden;
+  margin-top: 2px;
 }
 .dyn-fader input[type="range"] {
   position: absolute;
@@ -430,56 +491,48 @@ button.danger {
   top: 50%;
   transform: translate(-50%, -50%) rotate(-90deg);
   transform-origin: center center;
-  width: 238px;
+  width: 360px;
   height: 28px;
   margin: 0;
 }
 .dyn-fader input[type="range"]::-webkit-slider-runnable-track {
-  height: 10px;
-  border-radius: 999px;
-  background:
-    linear-gradient(90deg, rgba(68, 191, 255, 0.98), rgba(72, 126, 255, 0.98));
+  height: 12px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #071225 0%, #111c32 100%);
   box-shadow:
-    inset 0 1px 0 rgba(232, 246, 255, 0.45),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.2),
-    inset 0 0 0 1px rgba(145, 198, 255, 0.35),
-    0 0 12px rgba(67, 149, 255, 0.35);
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(108, 142, 188, 0.45);
 }
 .dyn-fader input[type="range"]::-webkit-slider-thumb {
-  width: 30px;
-  height: 30px;
-  margin-top: -10px;
-  border-radius: 50%;
-  border: 2px solid rgba(225, 242, 255, 0.98);
-  background: radial-gradient(circle at 30% 30%, #f7fcff 0%, #9ad4ff 45%, #4e95ff 100%);
+  width: 34px;
+  height: 20px;
+  margin-top: -4px;
+  border-radius: 2px;
+  border: 1px solid #8fb5d8;
+  background: linear-gradient(180deg, #f2f8ff 0%, #d7e8fa 35%, #9ebfdf 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.7),
-    0 0 0 2px rgba(78, 161, 255, 0.34),
-    0 5px 12px rgba(10, 29, 61, 0.33),
-    0 0 14px rgba(92, 170, 255, 0.58);
+    inset 0 1px 0 rgba(255,255,255,0.75),
+    0 1px 3px rgba(7, 17, 33, 0.5);
 }
 .dyn-fader input[type="range"]::-moz-range-track {
-  height: 10px;
-  border-radius: 999px;
-  background:
-    linear-gradient(90deg, rgba(68, 191, 255, 0.98), rgba(72, 126, 255, 0.98));
+  height: 12px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #071225 0%, #111c32 100%);
   box-shadow:
-    inset 0 1px 0 rgba(232, 246, 255, 0.45),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.2),
-    inset 0 0 0 1px rgba(145, 198, 255, 0.35),
-    0 0 12px rgba(67, 149, 255, 0.35);
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.45),
+    inset 0 0 0 1px rgba(108, 142, 188, 0.45);
 }
 .dyn-fader input[type="range"]::-moz-range-thumb {
-  width: 30px;
-  height: 30px;
-  border: 2px solid rgba(225, 242, 255, 0.98);
-  border-radius: 50%;
-  background: radial-gradient(circle at 30% 30%, #f7fcff 0%, #9ad4ff 45%, #4e95ff 100%);
+  width: 34px;
+  height: 20px;
+  border: 1px solid #8fb5d8;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #f2f8ff 0%, #d7e8fa 35%, #9ebfdf 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.7),
-    0 0 0 2px rgba(78, 161, 255, 0.34),
-    0 5px 12px rgba(10, 29, 61, 0.33),
-    0 0 14px rgba(92, 170, 255, 0.58);
+    inset 0 1px 0 rgba(255,255,255,0.75),
+    0 1px 3px rgba(7, 17, 33, 0.5);
 }
 
 .drc-layout {
