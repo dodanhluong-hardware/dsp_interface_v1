@@ -145,6 +145,56 @@ function showPwaBar() {
   pwaBar.hidden = false;
 }
 
+function inferRangeUnit(rangeEl) {
+  const id = rangeEl.id || '';
+  if (id.includes('freq') || id.includes('lpf') || id.includes('hpf')) return 'Hz';
+  if (id.includes('atk') || id.includes('attack') || id.includes('rel') || id.includes('release')) return 'ms';
+  if (id.includes('thr') || id.includes('threshold') || id.includes('depth')) return 'dB';
+  if (id.includes('gain') || id.includes('fx-send') || id.includes('afb') || id.includes('noise') || id.includes('mic')) return '';
+  return '';
+}
+
+function formatRangeValue(rangeEl) {
+  const raw = Number(rangeEl.value);
+  const step = Number(rangeEl.step || '1');
+  const unit = rangeEl.dataset.unit || inferRangeUnit(rangeEl);
+  const valueText = Number.isFinite(step) && step < 1 ? raw.toFixed(1) : String(Math.round(raw));
+  return unit ? `${valueText} ${unit}` : valueText;
+}
+
+function ensureRangeValueEl(rangeEl) {
+  let valueEl = rangeEl._valueEl;
+  if (valueEl) return valueEl;
+
+  valueEl = document.createElement('span');
+  valueEl.className = 'range-live-value';
+
+  const dynFader = rangeEl.closest('.dyn-fader');
+  if (dynFader) {
+    valueEl.classList.add('dyn-fader-value');
+    dynFader.appendChild(valueEl);
+  } else {
+    const host = rangeEl.closest('label') || rangeEl.parentElement;
+    if (host) host.appendChild(valueEl);
+  }
+
+  rangeEl._valueEl = valueEl;
+  return valueEl;
+}
+
+function initRangeLiveValues() {
+  const ranges = document.querySelectorAll('input[type="range"]');
+  ranges.forEach((rangeEl) => {
+    const valueEl = ensureRangeValueEl(rangeEl);
+    const render = () => {
+      valueEl.textContent = formatRangeValue(rangeEl);
+    };
+    render();
+    rangeEl.addEventListener('input', render);
+    rangeEl.addEventListener('change', render);
+  });
+}
+
 function renderEqLine(target) {
   const line = target === 'l'
     ? document.getElementById('eq-path-l')
@@ -758,3 +808,4 @@ renderPreampRows();
 syncBandChipUI();
 updateDrcCurve();
 setConnUI();
+initRangeLiveValues();
