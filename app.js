@@ -334,6 +334,13 @@ function renderFreqAxis(side = 'l') {
     tick.textContent = formatTickFreq(f);
   });
 
+  // Keep edge labels inside viewport on narrow screens.
+  const first = ticks[0];
+  if (first) {
+    first.style.left = '0%';
+    first.style.transform = 'translateX(0)';
+  }
+
   // Ensure right-most Nyquist tick always visible when Fs < 40k.
   const last = ticks[ticks.length - 1];
   if (maxF < EQ_MAX_FREQ_HARD && last) {
@@ -538,19 +545,34 @@ function renderPreampRows(side = 'l') {
     .filter((b) => b.active)
     .map((b) => `
       <div class="eq-table-row" data-row-band="${b.id}">
-        <span>F${b.id}</span>
-        <select data-field="type" data-band="${b.id}">
-          <option value="LP" ${b.type === 'LP' ? 'selected' : ''}>LP</option>
-          <option value="HP" ${b.type === 'HP' ? 'selected' : ''}>HP</option>
-          <option value="BP" ${b.type === 'BP' ? 'selected' : ''}>BP</option>
-          <option value="NOTCH" ${b.type === 'NOTCH' ? 'selected' : ''}>NOTCH</option>
-          <option value="PK" ${b.type === 'PK' ? 'selected' : ''}>PK</option>
-          <option value="LS" ${b.type === 'LS' ? 'selected' : ''}>LS</option>
-          <option value="HS" ${b.type === 'HS' ? 'selected' : ''}>HS</option>
-        </select>
-        <input data-field="fc" data-band="${b.id}" type="number" min="20" max="20000" value="${b.fc}">
-        <input data-field="gain" data-band="${b.id}" type="number" step="0.1" min="-12" max="12" value="${b.gain.toFixed(1)}" ${typeUsesGain(b.type) ? '' : 'disabled'}>
-        <input data-field="q" data-band="${b.id}" type="number" step="0.001" min="0.100" max="10.000" value="${b.q.toFixed(3)}">
+        <div class="eq-cell eq-cell-band">
+          <span class="eq-cell-label">Band</span>
+          <span class="eq-cell-value">F${b.id}</span>
+        </div>
+        <label class="eq-cell">
+          <span class="eq-cell-label">Type</span>
+          <select data-field="type" data-band="${b.id}">
+            <option value="LP" ${b.type === 'LP' ? 'selected' : ''}>LP</option>
+            <option value="HP" ${b.type === 'HP' ? 'selected' : ''}>HP</option>
+            <option value="BP" ${b.type === 'BP' ? 'selected' : ''}>BP</option>
+            <option value="NOTCH" ${b.type === 'NOTCH' ? 'selected' : ''}>NOTCH</option>
+            <option value="PK" ${b.type === 'PK' ? 'selected' : ''}>PK</option>
+            <option value="LS" ${b.type === 'LS' ? 'selected' : ''}>LS</option>
+            <option value="HS" ${b.type === 'HS' ? 'selected' : ''}>HS</option>
+          </select>
+        </label>
+        <label class="eq-cell">
+          <span class="eq-cell-label">Fc</span>
+          <input data-field="fc" data-band="${b.id}" type="number" min="20" max="20000" value="${b.fc}">
+        </label>
+        <label class="eq-cell">
+          <span class="eq-cell-label">Gain</span>
+          <input data-field="gain" data-band="${b.id}" type="number" step="0.1" min="-12" max="12" value="${b.gain.toFixed(1)}" ${typeUsesGain(b.type) ? '' : 'disabled'}>
+        </label>
+        <label class="eq-cell">
+          <span class="eq-cell-label">Q</span>
+          <input data-field="q" data-band="${b.id}" type="number" step="0.001" min="0.100" max="10.000" value="${b.q.toFixed(3)}">
+        </label>
       </div>
     `).join('');
   tableBody.innerHTML = rows;
