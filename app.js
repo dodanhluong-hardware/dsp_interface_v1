@@ -247,7 +247,10 @@ function renderEqLine(target) {
     line.setAttribute('points', points);
   }
   if (pointsGroup) {
-    pointsGroup.innerHTML = mapped.map((p) => `<circle cx="${p.x}" cy="${p.y}" r="1.2" data-band="${p.bandId ?? ''}"></circle>`).join('');
+    pointsGroup.innerHTML = mapped.map((p) => `
+      <circle class="eq-point-hit" cx="${p.x}" cy="${p.y}" r="2.4" data-band="${p.bandId ?? ''}"></circle>
+      <circle class="eq-point-core" cx="${p.x}" cy="${p.y}" r="1.2" data-band="${p.bandId ?? ''}" pointer-events="none"></circle>
+    `).join('');
   }
   if (labelsGroup && (target === 'l' || target === 'r')) {
     const bands = getPreampBands(target);

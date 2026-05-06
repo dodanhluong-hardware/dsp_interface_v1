@@ -566,14 +566,14 @@ button.danger {
   justify-items: center;
   justify-content: center;
   padding: 10px;
-  border: 1px solid #7ea5d9;
+  border: 1px solid #9ed7e9;
   border-radius: 14px;
   background:
-    radial-gradient(120% 95% at 50% 0%, rgba(209, 233, 255, 0.48), transparent 62%),
-    linear-gradient(180deg, #43679a 0%, #3a5d8d 62%, #314f7a 100%);
+    radial-gradient(120% 95% at 50% 0%, rgba(243, 253, 255, 0.92), transparent 64%),
+    linear-gradient(180deg, #d9f8ff 0%, #c0efff 58%, #a9e6fa 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.22),
-    inset 0 -6px 14px rgba(10, 26, 48, 0.16);
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -6px 14px rgba(37, 116, 149, 0.13);
   overflow: hidden;
 }
 .dyn-fader {
@@ -581,19 +581,19 @@ button.danger {
   grid-template-rows: auto 1fr;
   justify-items: center;
   gap: 8px;
-  color: #eef7ff;
+  color: #1e446b;
   font-size: 12px;
   font-weight: 700;
   padding: 8px 6px 6px;
-  border: 1px solid rgba(196, 223, 255, 0.52);
+  border: 1px solid #9fd2ea;
   border-radius: 12px;
-  background: linear-gradient(180deg, rgba(248, 253, 255, 0.17), rgba(236, 247, 255, 0.08));
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(234, 250, 255, 0.85));
   width: 100%;
   max-width: 174px;
   min-height: 455px;
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.2),
-    0 2px 6px rgba(18, 42, 78, 0.11);
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    0 2px 8px rgba(56, 126, 156, 0.18);
 }
 .dyn-fader-value {
   justify-self: center;
@@ -620,9 +620,9 @@ button.danger {
   width: 100%;
   text-align: center;
   justify-self: center;
-  color: #eaf6ff;
+  color: #2f5f8e;
   letter-spacing: 0.5px;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.35);
+  text-shadow: none;
   font-size: 13px;
 }
 .dyn-fader-rail {
@@ -632,9 +632,9 @@ button.danger {
   height: 390px;
   border-radius: 10px;
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.08), rgba(255,255,255,0.02)),
-    linear-gradient(180deg, #314d78 0%, #273f64 100%);
-  border: 1px solid rgba(169, 201, 241, 0.38);
+    linear-gradient(180deg, rgba(255,255,255,0.65), rgba(255,255,255,0.2)),
+    linear-gradient(180deg, #bce8f8 0%, #a7def3 100%);
+  border: 1px solid rgba(122, 184, 213, 0.65);
   overflow: hidden;
   margin-top: 2px;
 }
@@ -651,11 +651,11 @@ button.danger {
 .dyn-fader input[type="range"]::-webkit-slider-runnable-track {
   height: 12px;
   border-radius: 2px;
-  background: linear-gradient(90deg, #071225 0%, #111c32 100%);
+  background: linear-gradient(90deg, #3f7298 0%, #4a88b6 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.45),
-    inset 0 0 0 1px rgba(108, 142, 188, 0.45);
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(20, 56, 88, 0.35),
+    inset 0 0 0 1px rgba(107, 157, 196, 0.45);
 }
 .dyn-fader input[type="range"]::-webkit-slider-thumb {
   width: 34px;
@@ -671,11 +671,11 @@ button.danger {
 .dyn-fader input[type="range"]::-moz-range-track {
   height: 12px;
   border-radius: 2px;
-  background: linear-gradient(90deg, #071225 0%, #111c32 100%);
+  background: linear-gradient(90deg, #3f7298 0%, #4a88b6 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.45),
-    inset 0 0 0 1px rgba(108, 142, 188, 0.45);
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -1px 0 rgba(20, 56, 88, 0.35),
+    inset 0 0 0 1px rgba(107, 157, 196, 0.45);
 }
 .dyn-fader input[type="range"]::-moz-range-thumb {
   width: 34px;
@@ -801,19 +801,30 @@ button.danger {
   stroke-linejoin: round;
   filter: drop-shadow(0 0 2px rgba(82, 153, 255, 0.55));
 }
-#eq-points-l circle,
-#eq-points-r circle,
-#eq-points-mic circle {
+#eq-points-l .eq-point-core,
+#eq-points-r .eq-point-core,
+#eq-points-mic .eq-point-core {
   fill: #9bd0ff;
   stroke: #1a2840;
   stroke-width: 1.1;
   vector-effect: non-scaling-stroke;
-  cursor: grab;
   filter: drop-shadow(0 0 3px rgba(129, 191, 255, 0.45));
-  touch-action: none;
 }
-#eq-points-l circle.dragging,
-#eq-points-r circle.dragging { cursor: grabbing; }
+#eq-points-l .eq-point-hit,
+#eq-points-r .eq-point-hit,
+#eq-points-mic .eq-point-hit {
+  fill: transparent;
+  stroke: transparent;
+  stroke-width: 0;
+  cursor: grab;
+  touch-action: none;
+  pointer-events: all;
+}
+#eq-points-l .eq-point-hit.dragging + .eq-point-core,
+#eq-points-r .eq-point-hit.dragging + .eq-point-core {
+  fill: #b8ddff;
+  cursor: grabbing;
+}
 .eq-point-tag {
   fill: #d7ebff;
   paint-order: stroke;
@@ -1149,42 +1160,51 @@ button.danger {
     box-shadow: none;
   }
   .eq-table-head {
-    display: none;
+    min-width: 0;
+    display: grid;
+    grid-template-columns: 36px 56px minmax(72px, 1fr) minmax(58px, 0.9fr) minmax(52px, 0.8fr);
+    gap: 4px;
+    padding: 4px 2px 6px;
+    background: transparent;
+    color: #5f7ea7;
+    font-size: 10px;
+    font-weight: 700;
   }
   .eq-table-row {
     min-width: 0;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 8px;
-    padding: 9px;
-    border: 1px solid #c0d2e8;
-    border-radius: 10px;
-    background: #fff;
+    grid-template-columns: 36px 56px minmax(72px, 1fr) minmax(58px, 0.9fr) minmax(52px, 0.8fr);
+    gap: 4px;
+    padding: 6px 2px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
   }
   .eq-table-row + .eq-table-row {
-    border-top: 1px solid #c0d2e8;
-    margin-top: 8px;
+    border-top: 1px solid #d4e1f1;
+    margin-top: 0;
+    padding-top: 8px;
   }
   .eq-cell-label {
-    display: block;
+    display: none;
   }
   .eq-cell-band {
-    grid-column: 1 / -1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding-bottom: 2px;
-    border-bottom: 1px dashed #d3e0f0;
-  }
-  .eq-cell-band .eq-cell-label {
-    margin: 0;
+    grid-column: auto;
+    display: block;
+    padding-bottom: 0;
+    border-bottom: 0;
   }
   .eq-cell-band .eq-cell-value {
-    font-size: 14px;
+    font-size: 12px;
+    font-weight: 800;
+    color: #2f5380;
+    line-height: 30px;
   }
   .eq-table-row select,
   .eq-table-row input {
-    padding: 6px 8px;
-    font-size: 12px;
+    height: 30px;
+    padding: 4px 5px;
+    font-size: 11px;
+    border-radius: 8px;
   }
   .dyn-card {
     padding: 8px;
@@ -1317,8 +1337,16 @@ button.danger {
     padding: 5px 3px;
     font-size: 11px;
   }
-  .eq-cell-band .eq-cell-value {
-    font-size: 13px;
+  .eq-table-head,
+  .eq-table-row {
+    grid-template-columns: 32px 52px minmax(64px, 1fr) minmax(52px, 0.9fr) minmax(48px, 0.8fr);
+    gap: 3px;
+  }
+  .eq-table-row select,
+  .eq-table-row input {
+    height: 28px;
+    padding: 3px 4px;
+    font-size: 10px;
   }
   .dyn-fader {
     flex-basis: 128px;
