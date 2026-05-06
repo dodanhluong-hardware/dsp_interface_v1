@@ -10,17 +10,33 @@ const btNameInput = document.getElementById('bt-name');
 const bleNameInput = document.getElementById('ble-name');
 const chipDevice = document.getElementById('chip-device');
 const btnSidebarToggle = document.getElementById('btn-sidebar-toggle');
+const btnSidebarClose = document.getElementById('btn-sidebar-close');
 const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+const topbarPanelTitle = document.getElementById('topbar-panel-title');
 const pwaBar = document.getElementById('pwa-bar');
 const btnPwaInstall = document.getElementById('btn-pwa-install');
 const btnPwaClose = document.getElementById('btn-pwa-close');
 const PWA_BAR_CLOSED_KEY = 'pwa_bar_closed';
 const preampBandChipsL = document.querySelectorAll('#ch-l .band-chip[data-band]');
 const preampBandChipsR = document.querySelectorAll('#ch-r .band-chip[data-band]');
+const preampBandChipsSub = document.querySelectorAll('#ch-sub .band-chip[data-band]');
+const preampBandChipsMic1 = document.querySelectorAll('#mic1-band-chip-row .band-chip[data-band]');
+const preampBandChipsMic2 = document.querySelectorAll('#mic2-band-chip-row .band-chip[data-band]');
 const preampTableBodyL = document.getElementById('eq-table-body-l');
 const preampTableBodyR = document.getElementById('eq-table-body-r');
+const preampTableBodySub = document.getElementById('eq-table-body-sub');
+const preampTableBodyMic1 = document.getElementById('eq-table-body-mic1');
+const preampTableBodyMic2 = document.getElementById('eq-table-body-mic2');
 const eqSvgL = document.querySelector('#eq-path-l')?.ownerSVGElement || null;
 const eqSvgR = document.querySelector('#eq-path-r')?.ownerSVGElement || null;
+const eqSvgSub = document.querySelector('#eq-path-sub')?.ownerSVGElement || null;
+const eqSvgMic1 = document.querySelector('#eq-path-mic1')?.ownerSVGElement || null;
+const eqSvgMic2 = document.querySelector('#eq-path-mic2')?.ownerSVGElement || null;
+const subModeToggle = document.getElementById('sub-mode-toggle');
+const subPhaseToggle = document.getElementById('sub-phase-toggle');
+const subModeState = document.getElementById('sub-mode-state');
+const subPhaseState = document.getElementById('sub-phase-state');
+const micAfbToggle = document.getElementById('mic-afb-toggle');
 const drcCurve = document.getElementById('drc-curve');
 const drcParams = [
   'drc-pregain',
@@ -56,12 +72,61 @@ const preampBands = [
   { id: 8, active: false, type: 'PK', fc: 12000, gain: 0.0, q: 0.707 },
 ];
 const preampBandsR = preampBands.map((b) => ({ ...b }));
+const preampBandsSub = [
+  { id: 0, active: true, type: 'LP', fc: 80, gain: 0.0, q: 0.707 },
+  { id: 1, active: true, type: 'PK', fc: 160, gain: 0.0, q: 0.707 },
+  { id: 2, active: true, type: 'PK', fc: 315, gain: 0.0, q: 0.707 },
+  { id: 3, active: true, type: 'PK', fc: 630, gain: 0.0, q: 0.707 },
+  { id: 4, active: true, type: 'PK', fc: 1250, gain: 0.0, q: 0.707 },
+  { id: 5, active: true, type: 'HP', fc: 5000, gain: 0.0, q: 0.707 },
+];
+const preampBandsMic1 = [
+  { id: 0, active: true, type: 'LP', fc: 80, gain: 0.0, q: 0.707 },
+  { id: 1, active: true, type: 'PK', fc: 160, gain: 0.0, q: 0.707 },
+  { id: 2, active: true, type: 'PK', fc: 315, gain: 0.0, q: 0.707 },
+  { id: 3, active: true, type: 'PK', fc: 630, gain: 0.0, q: 0.707 },
+  { id: 4, active: true, type: 'PK', fc: 1250, gain: 0.0, q: 0.707 },
+  { id: 5, active: true, type: 'HP', fc: 6000, gain: 0.0, q: 0.707 },
+];
+const preampBandsMic2 = preampBandsMic1.map((b) => ({ ...b }));
 let draggingBandId = null;
 let isDragging = false;
 let draggingSide = null;
 
 function getPreampBands(side) {
-  return side === 'r' ? preampBandsR : preampBands;
+  if (side === 'r') return preampBandsR;
+  if (side === 'sub') return preampBandsSub;
+  if (side === 'mic1') return preampBandsMic1;
+  if (side === 'mic2') return preampBandsMic2;
+  return preampBands;
+}
+function getPreampTableBody(side) {
+  if (side === 'r') return preampTableBodyR;
+  if (side === 'sub') return preampTableBodySub;
+  if (side === 'mic1') return preampTableBodyMic1;
+  if (side === 'mic2') return preampTableBodyMic2;
+  return preampTableBodyL;
+}
+function getPreampBandChips(side) {
+  if (side === 'r') return preampBandChipsR;
+  if (side === 'sub') return preampBandChipsSub;
+  if (side === 'mic1') return preampBandChipsMic1;
+  if (side === 'mic2') return preampBandChipsMic2;
+  return preampBandChipsL;
+}
+function getEqSvg(side) {
+  if (side === 'r') return eqSvgR;
+  if (side === 'sub') return eqSvgSub;
+  if (side === 'mic1') return eqSvgMic1;
+  if (side === 'mic2') return eqSvgMic2;
+  return eqSvgL;
+}
+function getSideTxPrefix(side) {
+  if (side === 'r') return 'r_';
+  if (side === 'sub') return 'sub_';
+  if (side === 'mic1') return 'mic1_';
+  if (side === 'mic2') return 'mic2_';
+  return '';
 }
 function setDragScrollLock(locked) {
   if (locked) {
@@ -74,6 +139,11 @@ function setSidebarOpen(open) {
   document.body.classList.toggle('sidebar-open', open);
 }
 
+function syncTopbarPanelTitle(tabEl) {
+  if (!topbarPanelTitle || !tabEl) return;
+  topbarPanelTitle.textContent = tabEl.textContent?.trim() || '';
+}
+
 if (btnSidebarToggle) {
   btnSidebarToggle.addEventListener('click', () => {
     const next = !document.body.classList.contains('sidebar-open');
@@ -82,6 +152,9 @@ if (btnSidebarToggle) {
 }
 if (sidebarBackdrop) {
   sidebarBackdrop.addEventListener('click', () => setSidebarOpen(false));
+}
+if (btnSidebarClose) {
+  btnSidebarClose.addEventListener('click', () => setSidebarOpen(false));
 }
 
 
@@ -93,9 +166,12 @@ tabs.forEach((tab) => {
     tab.classList.add('active');
     const panel = document.getElementById(target);
     if (panel) panel.classList.add('active');
+    syncTopbarPanelTitle(tab);
     setSidebarOpen(false);
   });
 });
+
+syncTopbarPanelTitle(document.querySelector('.tab.active'));
 
 function setConnUI() {
   if (!connState) return;
@@ -206,7 +282,7 @@ function initRangeLiveValues() {
 }
 
 function renderEqLine(target) {
-  const line = (target === 'l' || target === 'r')
+  const line = (target === 'l' || target === 'r' || target === 'sub' || target === 'mic1' || target === 'mic2')
     ? document.getElementById(`eq-path-${target}`)
     : document.getElementById(`eq-line-${target}`);
   const pointsGroup = document.getElementById(`eq-points-${target}`);
@@ -214,7 +290,7 @@ function renderEqLine(target) {
   if (!line) return;
 
   let mapped = [];
-  if (target === 'l' || target === 'r') {
+  if (target === 'l' || target === 'r' || target === 'sub' || target === 'mic1' || target === 'mic2') {
     renderFreqAxis(target);
     const bands = getPreampBands(target);
     const activeBands = bands.filter((b) => b.active);
@@ -243,7 +319,7 @@ function renderEqLine(target) {
   }
 
   mapped.sort((a, b) => a.x - b.x);
-  if (target !== 'l' && target !== 'r') {
+  if (target !== 'l' && target !== 'r' && target !== 'sub' && target !== 'mic1' && target !== 'mic2') {
     const points = mapped.map((p) => `${p.x},${p.y}`).join(' ');
     line.setAttribute('points', points);
   }
@@ -253,7 +329,7 @@ function renderEqLine(target) {
       <circle class="eq-point-core" cx="${p.x}" cy="${p.y}" r="1.2" data-band="${p.bandId ?? ''}" pointer-events="none"></circle>
     `).join('');
   }
-  if (labelsGroup && (target === 'l' || target === 'r')) {
+  if (labelsGroup && (target === 'l' || target === 'r' || target === 'sub' || target === 'mic1' || target === 'mic2')) {
     const bands = getPreampBands(target);
     labelsGroup.innerHTML = mapped.map((p) => {
       const band = bands[p.bandId];
@@ -263,7 +339,7 @@ function renderEqLine(target) {
       const yTop = Math.max(1.6, p.y - 3.0);
       const yBottom = yTop + 1.35;
       return `
-        <text class="eq-point-tag eq-point-tag-title" x="${p.x}" y="${yTop}" text-anchor="middle">F${p.bandId} • ${typeText} • ${freqText}</text>
+        <text class="eq-point-tag eq-point-tag-title" x="${p.x}" y="${yTop}" text-anchor="middle">F${p.bandId} | ${typeText} | ${freqText}</text>
         <text class="eq-point-tag eq-point-tag-sub" x="${p.x}" y="${yBottom}" text-anchor="middle">${gainText}</text>
       `;
     }).join('');
@@ -316,7 +392,7 @@ function formatTickFreq(freq) {
 }
 
 function renderFreqAxis(side = 'l') {
-  const row = document.querySelector(`#ch-${side} .freq-row`);
+  const row = document.querySelector(`.freq-row[data-side="${side}"]`) || document.querySelector(`#ch-${side} .freq-row`);
   if (!row) return;
   const ticks = Array.from(row.querySelectorAll('span'));
   if (!ticks.length) return;
@@ -542,7 +618,7 @@ function typeUsesGain(type) {
 }
 
 function renderPreampRows(side = 'l') {
-  const tableBody = side === 'r' ? preampTableBodyR : preampTableBodyL;
+  const tableBody = getPreampTableBody(side);
   const bands = getPreampBands(side);
   if (!tableBody) return;
   const rows = bands
@@ -583,7 +659,7 @@ function renderPreampRows(side = 'l') {
 }
 
 function syncBandChipUI(side = 'l') {
-  const chips = side === 'r' ? preampBandChipsR : preampBandChipsL;
+  const chips = getPreampBandChips(side);
   const bands = getPreampBands(side);
   chips.forEach((chip) => {
     const idx = Number(chip.dataset.band);
@@ -593,7 +669,7 @@ function syncBandChipUI(side = 'l') {
 }
 
 function updatePreampRowFields(side, bandId) {
-  const tableBody = side === 'r' ? preampTableBodyR : preampTableBodyL;
+  const tableBody = getPreampTableBody(side);
   const bands = getPreampBands(side);
   if (!tableBody) return;
   const band = bands[bandId];
@@ -644,17 +720,16 @@ function bindPreampChipEvents(side, chips) {
       syncBandChipUI(side);
       renderPreampRows(side);
       renderEqLine(side);
-      if (side === 'l') {
-        sendTx(`band_F${idx}_${band.active ? 'on' : 'off'}`);
-      } else {
-        sendTx(`band_r_F${idx}_${band.active ? 'on' : 'off'}`);
-      }
+      sendTx(`band_${getSideTxPrefix(side)}F${idx}_${band.active ? 'on' : 'off'}`);
     });
   });
 }
 
 bindPreampChipEvents('l', preampBandChipsL);
 bindPreampChipEvents('r', preampBandChipsR);
+bindPreampChipEvents('sub', preampBandChipsSub);
+bindPreampChipEvents('mic1', preampBandChipsMic1);
+bindPreampChipEvents('mic2', preampBandChipsMic2);
 
 function bindPreampTableEvents(side, tableBody) {
   if (!tableBody) return;
@@ -691,20 +766,19 @@ function bindPreampTableEvents(side, tableBody) {
     renderEqLine(side);
     renderPreampRows(side);
     updatePreampRowFields(side, bandId);
-    if (side === 'l') {
-      sendTx(`band_F${bandId}_${field}_${target.value}`);
-    } else {
-      sendTx(`band_r_F${bandId}_${field}_${target.value}`);
-    }
+    sendTx(`band_${getSideTxPrefix(side)}F${bandId}_${field}_${target.value}`);
   });
 }
 
 bindPreampTableEvents('l', preampTableBodyL);
 bindPreampTableEvents('r', preampTableBodyR);
+bindPreampTableEvents('sub', preampTableBodySub);
+bindPreampTableEvents('mic1', preampTableBodyMic1);
+bindPreampTableEvents('mic2', preampTableBodyMic2);
 
 const onEqDragMove = (event) => {
   if (!isDragging || draggingBandId === null || !draggingSide) return;
-  const svg = draggingSide === 'r' ? eqSvgR : eqSvgL;
+  const svg = getEqSvg(draggingSide);
   if (!svg) return;
   const bands = getPreampBands(draggingSide);
   const band = bands[draggingBandId];
@@ -726,11 +800,7 @@ const onEqDragMove = (event) => {
 
 const stopEqDrag = () => {
   if (!isDragging || draggingBandId === null || !draggingSide) return;
-  if (draggingSide === 'l') {
-    sendTx(`drag_F${draggingBandId}_ok`);
-  } else {
-    sendTx(`drag_r_F${draggingBandId}_ok`);
-  }
+  sendTx(`drag_${getSideTxPrefix(draggingSide)}F${draggingBandId}_ok`);
   const side = draggingSide;
   draggingBandId = null;
   draggingSide = null;
@@ -760,6 +830,9 @@ function bindEqDrag(side, svg) {
 
 bindEqDrag('l', eqSvgL);
 bindEqDrag('r', eqSvgR);
+bindEqDrag('sub', eqSvgSub);
+bindEqDrag('mic1', eqSvgMic1);
+bindEqDrag('mic2', eqSvgMic2);
 window.addEventListener('pointermove', onEqDragMove, { passive: false });
 window.addEventListener('pointerup', stopEqDrag);
 window.addEventListener('pointercancel', stopEqDrag);
@@ -807,6 +880,56 @@ document.querySelectorAll('input[type="range"]:not(.eq-band), select').forEach((
     sendTx(key);
   });
 });
+
+function syncSubPhaseUI(phaseDeg) {
+  if (!subPhaseToggle) return;
+  const is180 = Number(phaseDeg) === 180;
+  subPhaseToggle.dataset.phase = is180 ? '180' : '0';
+  subPhaseToggle.setAttribute('aria-pressed', is180 ? 'true' : 'false');
+  subPhaseToggle.querySelector('.phase-label-0')?.classList.toggle('is-active', !is180);
+  subPhaseToggle.querySelector('.phase-label-180')?.classList.toggle('is-active', is180);
+  if (subPhaseState) subPhaseState.textContent = `Current: ${is180 ? '180°' : '0°'}`;
+}
+
+function syncSubModeUI(mode) {
+  if (!subModeToggle) return;
+  const isMono = String(mode).toLowerCase() === 'mono';
+  subModeToggle.dataset.mode = isMono ? 'mono' : 'stereo';
+  subModeToggle.setAttribute('aria-pressed', isMono ? 'true' : 'false');
+  subModeToggle.querySelector('.mode-label-stereo')?.classList.toggle('is-active', !isMono);
+  subModeToggle.querySelector('.mode-label-mono')?.classList.toggle('is-active', isMono);
+  if (subModeState) subModeState.textContent = `Current: ${isMono ? 'MONO' : 'STEREO'}`;
+}
+
+if (subModeToggle) {
+  syncSubModeUI(subModeToggle.dataset.mode || 'mono');
+  subModeToggle.addEventListener('click', () => {
+    const current = String(subModeToggle.dataset.mode || 'mono').toLowerCase();
+    const next = current === 'mono' ? 'stereo' : 'mono';
+    syncSubModeUI(next);
+    sendTx(`sub_mode_${next}`);
+  });
+}
+
+if (subPhaseToggle) {
+  syncSubPhaseUI(Number(subPhaseToggle.dataset.phase || '0'));
+  subPhaseToggle.addEventListener('click', () => {
+    const current = Number(subPhaseToggle.dataset.phase || '0');
+    const next = current === 0 ? 180 : 0;
+    syncSubPhaseUI(next);
+    sendTx(`sub_phase_${next}`);
+  });
+}
+
+if (micAfbToggle) {
+  micAfbToggle.addEventListener('click', () => {
+    const nextOn = micAfbToggle.getAttribute('aria-pressed') !== 'true';
+    micAfbToggle.setAttribute('aria-pressed', nextOn ? 'true' : 'false');
+    const txt = micAfbToggle.querySelector('.tiny-toggle-text');
+    if (txt) txt.textContent = nextOn ? 'ON' : 'OFF';
+    sendTx(`mic_afb_${nextOn ? 'on' : 'off'}`);
+  });
+}
 
 drcParams.forEach((el) => {
   el.addEventListener('input', () => {
@@ -880,17 +1003,35 @@ window.addEventListener('pageshow', () => {
 
 renderEqLine('l');
 renderEqLine('r');
-renderEqLine('mic');
+renderEqLine('sub');
+renderEqLine('mic1');
+renderEqLine('mic2');
 renderPreampRows('l');
 renderPreampRows('r');
+renderPreampRows('sub');
+renderPreampRows('mic1');
+renderPreampRows('mic2');
 syncBandChipUI('l');
 syncBandChipUI('r');
+syncBandChipUI('sub');
+syncBandChipUI('mic1');
+syncBandChipUI('mic2');
 updateDrcCurve();
 setConnUI();
 initRangeLiveValues();
 renderFreqAxis('l');
 renderFreqAxis('r');
+renderFreqAxis('sub');
+renderFreqAxis('mic1');
+renderFreqAxis('mic2');
 renderEqLine('l');
 renderEqLine('r');
+renderEqLine('sub');
+renderEqLine('mic1');
+renderEqLine('mic2');
 renderPreampRows('l');
 renderPreampRows('r');
+renderPreampRows('sub');
+renderPreampRows('mic1');
+renderPreampRows('mic2');
+
