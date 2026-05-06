@@ -148,6 +148,7 @@ function isRunningAsInstalledApp() {
 function showPwaBar() {
   if (!pwaBar) return;
   if (pwaBarClosedByUser) return;
+  if (!deferredInstallPrompt) return;
   if (isRunningAsInstalledApp()) return;
   if (location.protocol === 'file:') return;
   pwaBar.classList.remove('is-hidden');
@@ -870,11 +871,12 @@ if (btnPwaClose) {
   });
 }
 
-if (!pwaBarClosedByUser && !isRunningAsInstalledApp() && location.protocol !== 'file:') {
-  setTimeout(() => {
-    if (!deferredInstallPrompt) showPwaBar();
-  }, 1200);
+if (isRunningAsInstalledApp()) {
+  hidePwaBar();
 }
+window.addEventListener('pageshow', () => {
+  if (isRunningAsInstalledApp()) hidePwaBar();
+});
 
 renderEqLine('l');
 renderEqLine('r');

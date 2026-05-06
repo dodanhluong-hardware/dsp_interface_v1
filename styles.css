@@ -565,16 +565,12 @@ button.danger {
   align-items: start;
   justify-items: center;
   justify-content: center;
-  padding: 10px;
-  border: 1px solid #9ed7e9;
+  padding: 6px 2px;
+  border: 0;
   border-radius: 14px;
-  background:
-    radial-gradient(120% 95% at 50% 0%, rgba(243, 253, 255, 0.92), transparent 64%),
-    linear-gradient(180deg, #d9f8ff 0%, #c0efff 58%, #a9e6fa 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.85),
-    inset 0 -6px 14px rgba(37, 116, 149, 0.13);
-  overflow: hidden;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
 }
 .dyn-fader {
   display: grid;
@@ -1042,8 +1038,8 @@ button.danger {
     overflow-x: hidden;
   }
   body {
-    font-size: 15px;
-    padding-bottom: 82px;
+    font-size: 14px;
+    padding-bottom: 76px;
   }
   .topbar {
     border-radius: 0 0 14px 14px;
@@ -1060,17 +1056,17 @@ button.danger {
     align-items: flex-start;
   }
   .topbar h1 {
-    font-size: 28px;
+    font-size: 24px;
   }
   .topbar p {
-    font-size: 13px;
+    font-size: 12px;
   }
   .status-wrap {
     justify-content: flex-start;
   }
   .chip {
-    font-size: 10px;
-    padding: 4px 8px;
+    font-size: 9px;
+    padding: 3px 7px;
   }
   .sidebar {
     width: min(52vw, 260px);
@@ -1085,15 +1081,15 @@ button.danger {
     padding: 10px 8px 12px;
   }
   h2 {
-    font-size: 25px;
-    margin-bottom: 10px;
-  }
-  summary {
-    font-size: 18px;
+    font-size: 22px;
     margin-bottom: 8px;
   }
+  summary {
+    font-size: 16px;
+    margin-bottom: 7px;
+  }
   .card {
-    padding: 11px;
+    padding: 9px;
     border-radius: 12px;
   }
   .block-grid,
@@ -1121,7 +1117,7 @@ button.danger {
     min-width: 52px;
   }
   .eq-panel {
-    padding: 10px;
+    padding: 8px;
   }
   .eq-chart {
     grid-template-columns: 42px 1fr;
@@ -1132,7 +1128,7 @@ button.danger {
     padding-top: 4px;
   }
   .eq-graph.v41 {
-    height: 220px;
+    height: 205px;
     border-radius: 12px;
   }
   .freq-row {
@@ -1167,7 +1163,7 @@ button.danger {
     padding: 4px 2px 6px;
     background: transparent;
     color: #5f7ea7;
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 700;
   }
   .eq-table-row {
@@ -1201,57 +1197,61 @@ button.danger {
   }
   .eq-table-row select,
   .eq-table-row input {
-    height: 30px;
+    height: 28px;
     padding: 4px 5px;
-    font-size: 11px;
+    font-size: 10px;
     border-radius: 8px;
   }
-  .dyn-card {
-    padding: 8px;
+  .dyn-card-eq {
+    padding: 6px 4px;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
   }
   .dyn-faders {
-    display: flex;
-    flex-wrap: nowrap;
-    justify-content: flex-start;
-    align-items: stretch;
-    gap: 10px;
-    padding: 8px 8px 10px;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-    border-radius: 12px;
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    align-items: start;
+    justify-items: center;
+    gap: 4px;
+    padding: 2px 0;
+    overflow: visible;
+    border-radius: 0;
   }
   .dyn-fader {
-    gap: 6px;
-    padding: 8px 5px 6px;
-    min-height: 320px;
-    border-radius: 10px;
-    flex: 0 0 138px;
-    max-width: 138px;
+    gap: 4px;
+    padding: 6px 2px 4px;
+    min-height: 234px;
+    border-radius: 9px;
+    width: 100%;
+    max-width: none;
+    flex: none;
   }
   .dyn-fader > span {
-    font-size: 11px;
+    font-size: 9px;
+    letter-spacing: 0.1px;
   }
   .dyn-fader-rail {
-    width: 92%;
-    max-width: 84px;
-    height: 250px;
+    width: 100%;
+    max-width: 36px;
+    height: 166px;
   }
   .dyn-fader input[type="range"] {
-    width: 228px;
-    height: 24px;
+    width: 156px;
+    height: 18px;
   }
   .dyn-fader input[type="range"]::-webkit-slider-thumb {
-    width: 26px;
-    height: 16px;
+    width: 16px;
+    height: 12px;
+    margin-top: -1px;
   }
   .dyn-fader input[type="range"]::-moz-range-thumb {
-    width: 26px;
-    height: 16px;
+    width: 16px;
+    height: 12px;
   }
   .dyn-fader-value {
-    padding: 3px 8px;
-    font-size: 12px;
+    padding: 2px 5px;
+    font-size: 10px;
   }
   .drc-graph {
     height: 240px;
@@ -1259,15 +1259,15 @@ button.danger {
     max-height: 240px;
   }
   .drc-controls label {
-    font-size: 11px;
+    font-size: 10px;
   }
   .drc-controls label:first-child {
     grid-column: 1 / -1;
   }
   .drc-controls label input,
   .drc-controls label select {
-    height: 32px;
-    font-size: 14px;
+    height: 30px;
+    font-size: 12px;
   }
   .pwa-bar {
     left: 10px;
@@ -1284,7 +1284,7 @@ button.danger {
     left: 8px;
     right: 8px;
     bottom: 8px;
-    height: 58px;
+    height: 54px;
     padding: 7px 9px;
     border-radius: 12px;
   }
@@ -1344,13 +1344,36 @@ button.danger {
   }
   .eq-table-row select,
   .eq-table-row input {
-    height: 28px;
-    padding: 3px 4px;
+    height: 26px;
+    padding: 2px 3px;
     font-size: 10px;
   }
   .dyn-fader {
-    flex-basis: 128px;
-    max-width: 128px;
+    min-height: 214px;
+    padding: 5px 1px 4px;
+  }
+  .dyn-fader-rail {
+    max-width: 30px;
+    height: 150px;
+  }
+  .dyn-fader input[type="range"] {
+    width: 140px;
+    height: 16px;
+  }
+  .dyn-fader input[type="range"]::-webkit-slider-thumb {
+    width: 14px;
+    height: 10px;
+  }
+  .dyn-fader input[type="range"]::-moz-range-thumb {
+    width: 14px;
+    height: 10px;
+  }
+  .dyn-fader > span {
+    font-size: 8.5px;
+  }
+  .dyn-fader-value {
+    font-size: 9px;
+    padding: 1px 4px;
   }
   .bottom-bar {
     height: 56px;
