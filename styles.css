@@ -702,6 +702,7 @@ button.danger {
   filter: drop-shadow(0 0 2px rgba(82, 153, 255, 0.55));
 }
 #eq-points-l circle,
+#eq-points-r circle,
 #eq-points-mic circle {
   fill: #9bd0ff;
   stroke: #1a2840;
@@ -711,7 +712,8 @@ button.danger {
   filter: drop-shadow(0 0 3px rgba(129, 191, 255, 0.45));
   touch-action: none;
 }
-#eq-points-l circle.dragging { cursor: grabbing; }
+#eq-points-l circle.dragging,
+#eq-points-r circle.dragging { cursor: grabbing; }
 .eq-point-tag {
   fill: #d7ebff;
   paint-order: stroke;

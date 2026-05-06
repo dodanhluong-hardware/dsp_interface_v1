@@ -15,9 +15,12 @@ const pwaBar = document.getElementById('pwa-bar');
 const btnPwaInstall = document.getElementById('btn-pwa-install');
 const btnPwaClose = document.getElementById('btn-pwa-close');
 const PWA_BAR_CLOSED_KEY = 'pwa_bar_closed';
-const preampBandChips = document.querySelectorAll('.band-chip[data-band]');
-const preampTableBody = document.getElementById('eq-table-body');
+const preampBandChipsL = document.querySelectorAll('#ch-l .band-chip[data-band]');
+const preampBandChipsR = document.querySelectorAll('#ch-r .band-chip[data-band]');
+const preampTableBodyL = document.getElementById('eq-table-body');
+const preampTableBodyR = document.getElementById('eq-table-body-r');
 const eqSvgL = document.querySelector('#eq-path-l')?.ownerSVGElement || null;
+const eqSvgR = document.querySelector('#eq-path-r')?.ownerSVGElement || null;
 const drcCurve = document.getElementById('drc-curve');
 const drcParams = [
   'drc-pregain',
@@ -52,8 +55,14 @@ const preampBands = [
   { id: 7, active: false, type: 'PK', fc: 5000, gain: 0.0, q: 0.707 },
   { id: 8, active: false, type: 'PK', fc: 12000, gain: 0.0, q: 0.707 },
 ];
+const preampBandsR = preampBands.map((b) => ({ ...b }));
 let draggingBandId = null;
 let isDragging = false;
+let draggingSide = null;
+
+function getPreampBands(side) {
+  return side === 'r' ? preampBandsR : preampBands;
+}
 function setDragScrollLock(locked) {
   if (locked) {
     document.body.classList.add('drag-scroll-lock');
@@ -196,17 +205,18 @@ function initRangeLiveValues() {
 }
 
 function renderEqLine(target) {
-  const line = target === 'l'
-    ? document.getElementById('eq-path-l')
+  const line = (target === 'l' || target === 'r')
+    ? document.getElementById(`eq-path-${target}`)
     : document.getElementById(`eq-line-${target}`);
   const pointsGroup = document.getElementById(`eq-points-${target}`);
   const labelsGroup = document.getElementById(`eq-labels-${target}`);
   if (!line) return;
 
   let mapped = [];
-  if (target === 'l') {
-    renderFreqAxis();
-    const activeBands = preampBands.filter((b) => b.active);
+  if (target === 'l' || target === 'r') {
+    renderFreqAxis(target);
+    const bands = getPreampBands(target);
+    const activeBands = bands.filter((b) => b.active);
     if (!activeBands.length) {
       line.setAttribute('d', 'M 0 15 L 100 15');
       if (pointsGroup) pointsGroup.innerHTML = '';
@@ -239,9 +249,10 @@ function renderEqLine(target) {
   if (pointsGroup) {
     pointsGroup.innerHTML = mapped.map((p) => `<circle cx="${p.x}" cy="${p.y}" r="1.2" data-band="${p.bandId ?? ''}"></circle>`).join('');
   }
-  if (labelsGroup && target === 'l') {
+  if (labelsGroup && (target === 'l' || target === 'r')) {
+    const bands = getPreampBands(target);
     labelsGroup.innerHTML = mapped.map((p) => {
-      const band = preampBands[p.bandId];
+      const band = bands[p.bandId];
       const typeText = String(band?.type || 'PK').toUpperCase();
       const freqText = formatFreq(band?.fc ?? 0);
       const gainText = `${(band?.gain ?? 0).toFixed(1)} dB`;
@@ -300,8 +311,8 @@ function formatTickFreq(freq) {
   return `${Math.round(freq)}`;
 }
 
-function renderFreqAxis() {
-  const row = document.querySelector('.freq-row');
+function renderFreqAxis(side = 'l') {
+  const row = document.querySelector(`#ch-${side} .freq-row`);
   if (!row) return;
   const ticks = Array.from(row.querySelectorAll('span'));
   if (!ticks.length) return;
@@ -519,9 +530,11 @@ function typeUsesGain(type) {
   return t === 'PK' || t === 'LS' || t === 'HS';
 }
 
-function renderPreampRows() {
-  if (!preampTableBody) return;
-  const rows = preampBands
+function renderPreampRows(side = 'l') {
+  const tableBody = side === 'r' ? preampTableBodyR : preampTableBodyL;
+  const bands = getPreampBands(side);
+  if (!tableBody) return;
+  const rows = bands
     .filter((b) => b.active)
     .map((b) => `
       <div class="eq-table-row" data-row-band="${b.id}">
@@ -540,23 +553,27 @@ function renderPreampRows() {
         <input data-field="q" data-band="${b.id}" type="number" step="0.001" min="0.100" max="10.000" value="${b.q.toFixed(3)}">
       </div>
     `).join('');
-  preampTableBody.innerHTML = rows;
+  tableBody.innerHTML = rows;
 }
 
-function syncBandChipUI() {
-  preampBandChips.forEach((chip) => {
+function syncBandChipUI(side = 'l') {
+  const chips = side === 'r' ? preampBandChipsR : preampBandChipsL;
+  const bands = getPreampBands(side);
+  chips.forEach((chip) => {
     const idx = Number(chip.dataset.band);
-    const band = preampBands[idx];
+    const band = bands[idx];
     chip.classList.toggle('active', !!band?.active);
   });
 }
 
-function updatePreampRowFields(bandId) {
-  if (!preampTableBody) return;
-  const band = preampBands[bandId];
+function updatePreampRowFields(side, bandId) {
+  const tableBody = side === 'r' ? preampTableBodyR : preampTableBodyL;
+  const bands = getPreampBands(side);
+  if (!tableBody) return;
+  const band = bands[bandId];
   if (!band) return;
-  const fcInput = preampTableBody.querySelector(`input[data-field="fc"][data-band="${bandId}"]`);
-  const gainInput = preampTableBody.querySelector(`input[data-field="gain"][data-band="${bandId}"]`);
+  const fcInput = tableBody.querySelector(`input[data-field="fc"][data-band="${bandId}"]`);
+  const gainInput = tableBody.querySelector(`input[data-field="gain"][data-band="${bandId}"]`);
   if (fcInput) fcInput.value = String(band.fc);
   if (gainInput) gainInput.value = String(band.gain.toFixed(1));
 }
@@ -590,26 +607,38 @@ if (eqPresetSel) {
   });
 }
 
-preampBandChips.forEach((chip) => {
-  chip.addEventListener('click', () => {
-    const idx = Number(chip.dataset.band);
-    const band = preampBands[idx];
-    if (!band) return;
-    band.active = !band.active;
-    syncBandChipUI();
-    renderPreampRows();
-    renderEqLine('l');
-    sendTx(`band_F${idx}_${band.active ? 'on' : 'off'}`);
+function bindPreampChipEvents(side, chips) {
+  chips.forEach((chip) => {
+    chip.addEventListener('click', () => {
+      const idx = Number(chip.dataset.band);
+      const bands = getPreampBands(side);
+      const band = bands[idx];
+      if (!band) return;
+      band.active = !band.active;
+      syncBandChipUI(side);
+      renderPreampRows(side);
+      renderEqLine(side);
+      if (side === 'l') {
+        sendTx(`band_F${idx}_${band.active ? 'on' : 'off'}`);
+      } else {
+        sendTx(`band_r_F${idx}_${band.active ? 'on' : 'off'}`);
+      }
+    });
   });
-});
+}
 
-if (preampTableBody) {
-  preampTableBody.addEventListener('change', (event) => {
+bindPreampChipEvents('l', preampBandChipsL);
+bindPreampChipEvents('r', preampBandChipsR);
+
+function bindPreampTableEvents(side, tableBody) {
+  if (!tableBody) return;
+  tableBody.addEventListener('change', (event) => {
     const target = event.target;
     if (!(target instanceof HTMLElement)) return;
     const bandId = Number(target.getAttribute('data-band'));
     const field = target.getAttribute('data-field');
-    const band = preampBands[bandId];
+    const bands = getPreampBands(side);
+    const band = bands[bandId];
     if (!band || !field) return;
 
     if (field === 'type' && target instanceof HTMLSelectElement) {
@@ -633,48 +662,66 @@ if (preampTableBody) {
       if (!Number.isNaN(v)) band.q = Math.max(0.1, Math.min(10, v));
     }
 
-    renderEqLine('l');
-    renderPreampRows();
-    updatePreampRowFields(bandId);
-    sendTx(`band_F${bandId}_${field}_${target.value}`);
+    renderEqLine(side);
+    renderPreampRows(side);
+    updatePreampRowFields(side, bandId);
+    if (side === 'l') {
+      sendTx(`band_F${bandId}_${field}_${target.value}`);
+    } else {
+      sendTx(`band_r_F${bandId}_${field}_${target.value}`);
+    }
   });
 }
 
-if (eqSvgL) {
-  const onEqDragMove = (event) => {
-    if (!isDragging || draggingBandId === null || !eqSvgL) return;
-    const band = preampBands[draggingBandId];
-    if (!band || !band.active) return;
-    const rect = eqSvgL.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width) * 100;
-    const y = ((event.clientY - rect.top) / rect.height) * 30;
-    band.fc = xToFreq(x);
-    if (typeUsesGain(band.type)) {
-      band.gain = yToGain(y);
-    } else {
-      band.gain = 0;
-    }
-    renderEqLine('l');
-    updatePreampRowFields(draggingBandId);
-    setTxStatus('DRAG EQ', 'ok');
-    event.preventDefault();
-  };
+bindPreampTableEvents('l', preampTableBodyL);
+bindPreampTableEvents('r', preampTableBodyR);
 
-  const stopEqDrag = () => {
-    if (!isDragging || draggingBandId === null) return;
+const onEqDragMove = (event) => {
+  if (!isDragging || draggingBandId === null || !draggingSide) return;
+  const svg = draggingSide === 'r' ? eqSvgR : eqSvgL;
+  if (!svg) return;
+  const bands = getPreampBands(draggingSide);
+  const band = bands[draggingBandId];
+  if (!band || !band.active) return;
+  const rect = svg.getBoundingClientRect();
+  const x = ((event.clientX - rect.left) / rect.width) * 100;
+  const y = ((event.clientY - rect.top) / rect.height) * 30;
+  band.fc = xToFreq(x);
+  if (typeUsesGain(band.type)) {
+    band.gain = yToGain(y);
+  } else {
+    band.gain = 0;
+  }
+  renderEqLine(draggingSide);
+  updatePreampRowFields(draggingSide, draggingBandId);
+  setTxStatus('DRAG EQ', 'ok');
+  event.preventDefault();
+};
+
+const stopEqDrag = () => {
+  if (!isDragging || draggingBandId === null || !draggingSide) return;
+  if (draggingSide === 'l') {
     sendTx(`drag_F${draggingBandId}_ok`);
-    draggingBandId = null;
-    isDragging = false;
-    setDragScrollLock(false);
-    document.querySelectorAll('#eq-points-l circle.dragging').forEach((c) => c.classList.remove('dragging'));
-  };
+  } else {
+    sendTx(`drag_r_F${draggingBandId}_ok`);
+  }
+  const side = draggingSide;
+  draggingBandId = null;
+  draggingSide = null;
+  isDragging = false;
+  setDragScrollLock(false);
+  document.querySelectorAll(`#eq-points-${side} circle.dragging`).forEach((c) => c.classList.remove('dragging'));
+};
 
-  eqSvgL.addEventListener('pointerdown', (event) => {
+function bindEqDrag(side, svg) {
+  if (!svg) return;
+  svg.addEventListener('pointerdown', (event) => {
     const target = event.target;
     if (!(target instanceof SVGCircleElement)) return;
     const bandId = Number(target.getAttribute('data-band'));
     if (Number.isNaN(bandId)) return;
     draggingBandId = bandId;
+    draggingSide = side;
     isDragging = true;
     target.classList.add('dragging');
     setDragScrollLock(true);
@@ -683,11 +730,13 @@ if (eqSvgL) {
     }
     event.preventDefault();
   });
-
-  window.addEventListener('pointermove', onEqDragMove, { passive: false });
-  window.addEventListener('pointerup', stopEqDrag);
-  window.addEventListener('pointercancel', stopEqDrag);
 }
+
+bindEqDrag('l', eqSvgL);
+bindEqDrag('r', eqSvgR);
+window.addEventListener('pointermove', onEqDragMove, { passive: false });
+window.addEventListener('pointerup', stopEqDrag);
+window.addEventListener('pointercancel', stopEqDrag);
 
 document.querySelectorAll('input[type="range"]').forEach((slider) => {
   slider.addEventListener('pointerdown', () => setDragScrollLock(true));
@@ -803,9 +852,12 @@ if (!pwaBarClosedByUser && !isRunningAsInstalledApp() && location.protocol !== '
 }
 
 renderEqLine('l');
+renderEqLine('r');
 renderEqLine('mic');
-renderPreampRows();
-syncBandChipUI();
+renderPreampRows('l');
+renderPreampRows('r');
+syncBandChipUI('l');
+syncBandChipUI('r');
 updateDrcCurve();
 setConnUI();
 initRangeLiveValues();
