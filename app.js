@@ -17,7 +17,7 @@ const btnPwaClose = document.getElementById('btn-pwa-close');
 const PWA_BAR_CLOSED_KEY = 'pwa_bar_closed';
 const preampBandChipsL = document.querySelectorAll('#ch-l .band-chip[data-band]');
 const preampBandChipsR = document.querySelectorAll('#ch-r .band-chip[data-band]');
-const preampTableBodyL = document.getElementById('eq-table-body');
+const preampTableBodyL = document.getElementById('eq-table-body-l');
 const preampTableBodyR = document.getElementById('eq-table-body-r');
 const eqSvgL = document.querySelector('#eq-path-l')?.ownerSVGElement || null;
 const eqSvgR = document.querySelector('#eq-path-r')?.ownerSVGElement || null;
@@ -242,7 +242,7 @@ function renderEqLine(target) {
   }
 
   mapped.sort((a, b) => a.x - b.x);
-  if (target !== 'l') {
+  if (target !== 'l' && target !== 'r') {
     const points = mapped.map((p) => `${p.x},${p.y}`).join(' ');
     line.setAttribute('points', points);
   }
@@ -861,3 +861,9 @@ syncBandChipUI('r');
 updateDrcCurve();
 setConnUI();
 initRangeLiveValues();
+renderFreqAxis('l');
+renderFreqAxis('r');
+renderEqLine('l');
+renderEqLine('r');
+renderPreampRows('l');
+renderPreampRows('r');
