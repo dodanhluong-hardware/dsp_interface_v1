@@ -1194,16 +1194,17 @@ button.danger {
   fill: #ecf7ff;
   paint-order: stroke;
   stroke: rgba(7, 14, 26, 0.88);
-  stroke-width: 0.4;
+  stroke-width: 0.48;
   vector-effect: non-scaling-stroke;
   pointer-events: none;
+  letter-spacing: 0.015em;
 }
 .eq-point-tag-title {
-  font-size: 1.15px;
+  font-size: 1.34px;
   font-weight: 700;
 }
 .eq-point-tag-sub {
-  font-size: 1.02px;
+  font-size: 1.2px;
   font-weight: 600;
   fill: #d4ecff;
 }

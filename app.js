@@ -436,14 +436,37 @@ function renderEqLine(target) {
   }
   if (labelsGroup && (target === 'l' || target === 'r' || target === 'sub' || target === 'mic1' || target === 'mic2')) {
     const bands = getPreampBands(target);
-    labelsGroup.innerHTML = mapped.map((p) => {
+    const labelAnchors = new Map();
+    if (mapped.length) {
+      const leftBound = 6;
+      const rightBound = 94;
+      const span = rightBound - leftBound;
+      const slots = mapped.map((p) => Math.max(leftBound, Math.min(rightBound, p.x)));
+      const minGap = Math.min(12, Math.max(8, span / Math.max(1, mapped.length - 1)));
+
+      for (let i = 1; i < slots.length; i += 1) {
+        slots[i] = Math.max(slots[i], slots[i - 1] + minGap);
+      }
+      if (slots.length) {
+        slots[slots.length - 1] = Math.min(slots[slots.length - 1], rightBound);
+      }
+      for (let i = slots.length - 2; i >= 0; i -= 1) {
+        slots[i] = Math.min(slots[i], slots[i + 1] - minGap);
+      }
+      mapped.forEach((p, i) => {
+        labelAnchors.set(p.bandId, slots[i]);
+      });
+    }
+
+    labelsGroup.innerHTML = mapped.map((p, idx) => {
       const band = bands[p.bandId];
       const typeText = String(band?.type || 'PK').toUpperCase();
       const freqText = formatFreq(band?.fc ?? 0);
       const gainText = `${(band?.gain ?? 0).toFixed(1)} dB`;
-      const labelX = Math.max(7, Math.min(93, p.x));
-      const yTop = Math.max(2.2, p.y - 3.6);
-      const yBottom = yTop + 1.75;
+      const labelX = labelAnchors.get(p.bandId) ?? Math.max(7, Math.min(93, p.x));
+      const yOffset = idx % 2 === 0 ? 4.2 : 5.3;
+      const yTop = Math.max(2.2, p.y - yOffset);
+      const yBottom = yTop + 2.15;
       return `
         <text class="eq-point-tag eq-point-tag-title" x="${labelX}" y="${yTop}" text-anchor="middle">F${p.bandId} | ${freqText}</text>
         <text class="eq-point-tag eq-point-tag-sub" x="${labelX}" y="${yBottom}" text-anchor="middle">${typeText} | ${gainText}</text>
