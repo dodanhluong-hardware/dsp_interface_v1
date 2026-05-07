@@ -325,6 +325,24 @@ details.card[open] > summary {
 .grid.one { grid-template-columns: 1fr; }
 .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+#connect .grid {
+  max-width: 980px;
+  margin: 0 auto;
+}
+#connect .card {
+  min-height: 420px;
+  padding: 26px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  text-align: left;
+}
+#connect .card h3 {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 40px);
+  text-align: center;
+}
 .output-control-card .grid {
   max-width: 1120px;
   margin: 0 auto;
@@ -525,41 +543,47 @@ label {
   font-weight: 700;
 }
 .tiny-toggle {
-  min-width: 78px;
+  position: relative;
+  min-width: 86px;
   height: 34px;
   border-radius: 999px;
   border: 1px solid #3f6f9f;
-  padding: 2px 8px 2px 4px;
+  padding: 2px;
   display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  background: linear-gradient(180deg, rgba(17, 35, 59, 0.96), rgba(11, 25, 46, 0.96));
-  color: #8fb7df;
-  font-size: 11px;
-  font-weight: 800;
+  justify-content: flex-start;
+  background: linear-gradient(180deg, rgba(16, 28, 48, 0.95), rgba(10, 20, 37, 0.95));
+  box-shadow: inset 0 0 0 1px rgba(68, 119, 169, 0.35);
 }
 .tiny-toggle-knob {
+  position: absolute;
+  top: 3px;
+  left: 4px;
   width: 26px;
   height: 26px;
   border-radius: 50%;
-  border: 1px solid #7db8dc;
-  background: linear-gradient(180deg, #d9ecff, #9ec1e8);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,0.9);
-  transition: transform 140ms ease;
+  border: 1px solid #5f86ac;
+  background: linear-gradient(180deg, #6f8db0, #4f6f94);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.16);
+  transition: transform 150ms ease, background 150ms ease, box-shadow 150ms ease, border-color 150ms ease;
 }
 .tiny-toggle[aria-pressed="true"] {
   border-color: #53d6a8;
-  color: #d6fff0;
-  background: linear-gradient(180deg, rgba(14, 46, 48, 0.95), rgba(10, 34, 35, 0.95));
+  background: linear-gradient(180deg, rgba(13, 54, 54, 0.98), rgba(10, 40, 42, 0.98));
+  box-shadow:
+    inset 0 0 0 1px rgba(97, 230, 183, 0.4),
+    0 0 12px rgba(70, 223, 170, 0.22);
 }
 .tiny-toggle[aria-pressed="true"] .tiny-toggle-knob {
-  transform: translateX(40px);
+  transform: translateX(52px);
   border-color: #8ce9c8;
-  background: linear-gradient(180deg, #e8fff6, #9deccc);
+  background: linear-gradient(180deg, #f0fff8, #bdf7de);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.95),
+    0 0 12px rgba(124, 245, 203, 0.75);
 }
 .tiny-toggle-text {
-  min-width: 26px;
-  text-align: right;
+  display: none;
 }
 select, input[type="text"], input[type="number"], button {
   border: 1px solid #355b87;
@@ -1139,11 +1163,11 @@ button.danger {
 #eq-points-mic1 .eq-point-core,
 #eq-points-mic2 .eq-point-core,
 #eq-points-mic .eq-point-core {
-  fill: #9bd0ff;
-  stroke: #1a2840;
+  fill: #ffd84a;
+  stroke: #8b5a00;
   stroke-width: 1.1;
   vector-effect: non-scaling-stroke;
-  filter: drop-shadow(0 0 3px rgba(129, 191, 255, 0.45));
+  filter: drop-shadow(0 0 5px rgba(255, 206, 65, 0.85));
 }
 #eq-points-l .eq-point-hit,
 #eq-points-r .eq-point-hit,
@@ -1163,25 +1187,25 @@ button.danger {
 #eq-points-sub .eq-point-hit.dragging + .eq-point-core,
 #eq-points-mic1 .eq-point-hit.dragging + .eq-point-core,
 #eq-points-mic2 .eq-point-hit.dragging + .eq-point-core {
-  fill: #b8ddff;
+  fill: #ffe884;
   cursor: grabbing;
 }
 .eq-point-tag {
-  fill: #d7ebff;
+  fill: #ecf7ff;
   paint-order: stroke;
-  stroke: rgba(10, 20, 35, 0.7);
-  stroke-width: 0.25;
+  stroke: rgba(7, 14, 26, 0.88);
+  stroke-width: 0.4;
   vector-effect: non-scaling-stroke;
   pointer-events: none;
 }
 .eq-point-tag-title {
-  font-size: 0.95px;
+  font-size: 1.15px;
   font-weight: 700;
 }
 .eq-point-tag-sub {
-  font-size: 0.85px;
+  font-size: 1.02px;
   font-weight: 600;
-  fill: #b9d7ff;
+  fill: #d4ecff;
 }
 
 .eq-sliders {
@@ -1229,18 +1253,23 @@ button.danger {
 }
 .connect-row {
   justify-content: center;
+  flex: 1;
+  align-items: center;
 }
 #btn-ble-toggle {
-  min-height: 100px;
-  width: min(100%, 360px);
-  padding: 20px 34px;
-  border-radius: 18px;
-  font-size: 30px;
+  min-height: 128px;
+  width: min(100%, 460px);
+  padding: 24px 36px;
+  border-radius: 20px;
+  font-size: 36px;
   font-weight: 700;
 }
 .ble-link-state {
-  margin: 10px 0 0;
-  font-size: 13px;
+  margin: 0;
+  padding-top: 12px;
+  border-top: 1px solid rgba(86, 168, 239, 0.28);
+  text-align: center;
+  font-size: 15px;
   font-weight: 600;
   color: #9dc8ef;
 }
@@ -1510,17 +1539,28 @@ button.danger {
     grid-template-columns: repeat(4, minmax(74px, 1fr));
   }
   .tiny-toggle {
-    min-width: 72px;
+    min-width: 78px;
     height: 30px;
-    padding: 2px 7px 2px 3px;
-    font-size: 10px;
+    padding: 2px;
   }
   .tiny-toggle-knob {
     width: 22px;
     height: 22px;
+    top: 3px;
+    left: 3px;
   }
   .tiny-toggle[aria-pressed="true"] .tiny-toggle-knob {
-    transform: translateX(36px);
+    transform: translateX(50px);
+  }
+  #connect .card {
+    min-height: 360px;
+    padding: 22px 14px 18px;
+  }
+  #btn-ble-toggle {
+    min-height: 108px;
+    width: min(100%, 380px);
+    font-size: 31px;
+    padding: 20px 24px;
   }
   .block-grid,
   .grid,
@@ -1818,17 +1858,31 @@ button.danger {
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
   .tiny-toggle {
-    min-width: 66px;
+    min-width: 70px;
     height: 28px;
-    padding: 2px 6px 2px 3px;
-    font-size: 9px;
+    padding: 2px;
   }
   .tiny-toggle-knob {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
+    top: 3px;
+    left: 3px;
   }
   .tiny-toggle[aria-pressed="true"] .tiny-toggle-knob {
-    transform: translateX(31px);
+    transform: translateX(44px);
+  }
+  #connect .card {
+    min-height: 320px;
+    padding: 18px 12px 14px;
+  }
+  #btn-ble-toggle {
+    min-height: 96px;
+    width: min(100%, 320px);
+    font-size: 28px;
+    padding: 16px 18px;
+  }
+  .ble-link-state {
+    font-size: 14px;
   }
   .dyn-fader {
     min-height: 214px;

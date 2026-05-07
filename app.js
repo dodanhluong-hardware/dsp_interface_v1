@@ -196,7 +196,7 @@ function setConnUI() {
 
 function setBleLinkState(text, mode = 'normal') {
   if (!bleLinkState) return;
-  bleLinkState.textContent = text;
+  bleLinkState.textContent = `Trạng thái kết nối: ${text}`;
   bleLinkState.classList.remove('ok', 'bad');
   if (mode === 'ok') bleLinkState.classList.add('ok');
   if (mode === 'bad') bleLinkState.classList.add('bad');
@@ -430,8 +430,8 @@ function renderEqLine(target) {
   }
   if (pointsGroup) {
     pointsGroup.innerHTML = mapped.map((p) => `
-      <circle class="eq-point-hit" cx="${p.x}" cy="${p.y}" r="2.4" data-band="${p.bandId ?? ''}"></circle>
-      <circle class="eq-point-core" cx="${p.x}" cy="${p.y}" r="1.2" data-band="${p.bandId ?? ''}" pointer-events="none"></circle>
+      <circle class="eq-point-hit" cx="${p.x}" cy="${p.y}" r="2.8" data-band="${p.bandId ?? ''}"></circle>
+      <circle class="eq-point-core" cx="${p.x}" cy="${p.y}" r="1.45" data-band="${p.bandId ?? ''}" pointer-events="none"></circle>
     `).join('');
   }
   if (labelsGroup && (target === 'l' || target === 'r' || target === 'sub' || target === 'mic1' || target === 'mic2')) {
@@ -441,11 +441,12 @@ function renderEqLine(target) {
       const typeText = String(band?.type || 'PK').toUpperCase();
       const freqText = formatFreq(band?.fc ?? 0);
       const gainText = `${(band?.gain ?? 0).toFixed(1)} dB`;
-      const yTop = Math.max(1.6, p.y - 3.0);
-      const yBottom = yTop + 1.35;
+      const labelX = Math.max(7, Math.min(93, p.x));
+      const yTop = Math.max(2.2, p.y - 3.6);
+      const yBottom = yTop + 1.75;
       return `
-        <text class="eq-point-tag eq-point-tag-title" x="${p.x}" y="${yTop}" text-anchor="middle">F${p.bandId} | ${typeText} | ${freqText}</text>
-        <text class="eq-point-tag eq-point-tag-sub" x="${p.x}" y="${yBottom}" text-anchor="middle">${gainText}</text>
+        <text class="eq-point-tag eq-point-tag-title" x="${labelX}" y="${yTop}" text-anchor="middle">F${p.bandId} | ${freqText}</text>
+        <text class="eq-point-tag eq-point-tag-sub" x="${labelX}" y="${yBottom}" text-anchor="middle">${typeText} | ${gainText}</text>
       `;
     }).join('');
   }
@@ -1027,8 +1028,6 @@ if (micAfbToggle) {
   micAfbToggle.addEventListener('click', () => {
     const nextOn = micAfbToggle.getAttribute('aria-pressed') !== 'true';
     micAfbToggle.setAttribute('aria-pressed', nextOn ? 'true' : 'false');
-    const txt = micAfbToggle.querySelector('.tiny-toggle-text');
-    if (txt) txt.textContent = nextOn ? 'ON' : 'OFF';
     sendTx(`mic_afb_${nextOn ? 'on' : 'off'}`);
   });
 }
