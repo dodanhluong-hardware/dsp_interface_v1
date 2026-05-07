@@ -15,15 +15,8 @@
     <div class="topbar-left">
       <button id="btn-sidebar-toggle" class="icon-btn" title="Ẩn/hiện sidebar" aria-label="Toggle sidebar">☰</button>
       <div class="topbar-brand">
-      <h1>DSP Tool</h1>
-      <p>Prototype channel-centric UI</p>
-      <div id="topbar-panel-title" class="topbar-panel-title">Kênh Trái (L)</div>
+        <div id="topbar-panel-title" class="topbar-panel-title">Kênh Trái (L)</div>
       </div>
-    </div>
-    <div class="status-wrap">
-      <span class="chip ok">BLE Connected</span>
-      <span class="chip" id="chip-device">MVAPP_DSP_01</span>
-      <span class="chip">CPU 24%</span>
     </div>
   </header>
 
@@ -42,19 +35,13 @@
     <main>
       <section class="panel" id="connect">
         <h2>Kết nối</h2>
-        <div class="grid two">
-          <div class="card">
-            <h3>Thiết bị BLE</h3>
-            <p>Device: MVAPP_DSP_01</p>
-            <p>RSSI: -48 dBm</p>
-            <p>FW: 0.3.2</p>
-          </div>
+        <div class="grid">
           <div class="card">
             <h3>Điều khiển</h3>
-            <div class="row">
-              <button id="btn-connect">Connect</button>
-              <button id="btn-disconnect" class="danger">Disconnect</button>
+            <div class="row connect-row">
+              <button id="btn-ble-toggle">Kết nối</button>
             </div>
+            <p id="ble-link-state" class="ble-link-state">Chưa kết nối BLE Web</p>
           </div>
         </div>
       </section>

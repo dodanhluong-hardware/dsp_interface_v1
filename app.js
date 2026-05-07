@@ -1,8 +1,8 @@
 const tabs = document.querySelectorAll('.tab');
 const panels = document.querySelectorAll('.panel');
 const btnSave = document.getElementById('btn-save');
-const btnConnect = document.getElementById('btn-connect');
-const btnDisconnect = document.getElementById('btn-disconnect');
+const btnBleToggle = document.getElementById('btn-ble-toggle');
+const bleLinkState = document.getElementById('ble-link-state');
 const connState = document.getElementById('conn-state');
 const txState = document.getElementById('tx-state');
 const eqPresetSel = document.getElementById('system-eq-preset');
@@ -38,6 +38,7 @@ const subModeState = document.getElementById('sub-mode-state');
 const subPhaseState = document.getElementById('sub-phase-state');
 const micAfbToggle = document.getElementById('mic-afb-toggle');
 const drcCurve = document.getElementById('drc-curve');
+const drcCurveR = document.getElementById('drc-curve-r');
 const drcParams = [
   'drc-pregain',
   'drc-threshold',
@@ -48,11 +49,24 @@ const drcParams = [
   'drc-makeup',
   'drc-mode',
 ].map((id) => document.getElementById(id)).filter(Boolean);
+const drcParamsR = [
+  'drc-pregain-r',
+  'drc-threshold-r',
+  'drc-ratio-r',
+  'drc-knee-r',
+  'drc-attack-r',
+  'drc-release-r',
+  'drc-makeup-r',
+  'drc-mode-r',
+].map((id) => document.getElementById(id)).filter(Boolean);
 
-let connected = true;
+let connected = false;
 let lastTx = '';
 let deferredInstallPrompt = null;
 let pwaBarClosedByUser = localStorage.getItem(PWA_BAR_CLOSED_KEY) === '1';
+let bleDevice = null;
+let bleServer = null;
+let bleConnecting = false;
 const DB_MIN = -12;
 const DB_MAX = 12;
 const CHART_H = 30;
@@ -178,6 +192,97 @@ function setConnUI() {
   connState.textContent = connected ? 'Connected' : 'Disconnected';
   connState.classList.remove('ok', 'bad');
   connState.classList.add(connected ? 'ok' : 'bad');
+}
+
+function setBleLinkState(text, mode = 'normal') {
+  if (!bleLinkState) return;
+  bleLinkState.textContent = text;
+  bleLinkState.classList.remove('ok', 'bad');
+  if (mode === 'ok') bleLinkState.classList.add('ok');
+  if (mode === 'bad') bleLinkState.classList.add('bad');
+}
+
+function setBleToggleUI() {
+  if (!btnBleToggle) return;
+  if (bleConnecting) {
+    btnBleToggle.textContent = 'Đang kết nối...';
+    btnBleToggle.disabled = true;
+    btnBleToggle.classList.remove('danger');
+    return;
+  }
+  btnBleToggle.disabled = false;
+  if (connected) {
+    btnBleToggle.textContent = 'Ngắt kết nối';
+    btnBleToggle.classList.add('danger');
+  } else {
+    btnBleToggle.textContent = 'Kết nối';
+    btnBleToggle.classList.remove('danger');
+  }
+}
+
+function applyBleDisconnectedState(text = 'Chưa kết nối BLE Web') {
+  connected = false;
+  bleServer = null;
+  setConnUI();
+  setBleToggleUI();
+  setBleLinkState(text, 'bad');
+}
+
+function handleBleDisconnected() {
+  applyBleDisconnectedState('Đã ngắt kết nối BLE Web');
+  setTxStatus('link down', 'bad');
+}
+
+async function connectBleWeb() {
+  if (!navigator.bluetooth) {
+    setBleLinkState('Trình duyệt không hỗ trợ BLE Web', 'bad');
+    setTxStatus('BLE Web unsupported', 'bad');
+    return;
+  }
+  bleConnecting = true;
+  setBleToggleUI();
+  setBleLinkState('Đang kết nối BLE Web...');
+  setTxStatus('connecting...', 'warn');
+  try {
+    const device = await navigator.bluetooth.requestDevice({
+      acceptAllDevices: true,
+      optionalServices: ['battery_service'],
+    });
+    if (!device) throw new Error('No BLE device selected');
+
+    if (bleDevice) {
+      bleDevice.removeEventListener('gattserverdisconnected', handleBleDisconnected);
+    }
+    bleDevice = device;
+    bleDevice.addEventListener('gattserverdisconnected', handleBleDisconnected);
+
+    if (bleDevice.gatt) {
+      bleServer = await bleDevice.gatt.connect();
+    }
+
+    connected = true;
+    setConnUI();
+    setBleToggleUI();
+    const name = bleDevice.name || bleNameInput?.value || 'Unknown';
+    setBleLinkState(`Đã kết nối BLE: ${name}`, 'ok');
+    setTxStatus('link up', 'ok');
+  } catch (error) {
+    const isCancelled = error?.name === 'NotFoundError';
+    applyBleDisconnectedState(isCancelled ? 'Bạn chưa chọn thiết bị BLE' : 'Kết nối BLE thất bại');
+    setTxStatus(isCancelled ? 'cancel connect' : 'connect fail', isCancelled ? 'warn' : 'bad');
+  } finally {
+    bleConnecting = false;
+    setBleToggleUI();
+  }
+}
+
+function disconnectBleWeb() {
+  if (bleDevice && bleDevice.gatt?.connected) {
+    bleDevice.gatt.disconnect();
+    return;
+  }
+  applyBleDisconnectedState();
+  setTxStatus('link down', 'bad');
 }
 
 function setTxStatus(text, mode = 'normal') {
@@ -494,12 +599,14 @@ function formatFreq(fc) {
   return `${Math.round(fc)}Hz`;
 }
 
-function updateDrcCurve() {
-  if (!drcCurve) return;
-  const threshold = Number(document.getElementById('drc-threshold')?.value ?? -24);
-  const ratio = Math.max(1, Number(document.getElementById('drc-ratio')?.value ?? 3));
-  const knee = Math.max(0, Number(document.getElementById('drc-knee')?.value ?? 6));
-  const makeup = Number(document.getElementById('drc-makeup')?.value ?? 0);
+function updateDrcCurve(side = 'l') {
+  const suffix = side === 'r' ? '-r' : '';
+  const curve = side === 'r' ? drcCurveR : drcCurve;
+  if (!curve) return;
+  const threshold = Number(document.getElementById(`drc-threshold${suffix}`)?.value ?? -24);
+  const ratio = Math.max(1, Number(document.getElementById(`drc-ratio${suffix}`)?.value ?? 3));
+  const knee = Math.max(0, Number(document.getElementById(`drc-knee${suffix}`)?.value ?? 6));
+  const makeup = Number(document.getElementById(`drc-makeup${suffix}`)?.value ?? 0);
 
   const inMin = -80;
   const inMax = 0;
@@ -534,7 +641,7 @@ function updateDrcCurve() {
     pts += i === 0 ? `${px},${py}` : ` ${px},${py}`;
   }
 
-  drcCurve.setAttribute('points', pts);
+  curve.setAttribute('points', pts);
 }
 
 function sigmoid(v) {
@@ -687,19 +794,14 @@ if (btnSave) {
   });
 }
 
-if (btnConnect) {
-  btnConnect.addEventListener('click', () => {
-    connected = true;
-    setConnUI();
-    setTxStatus('link up', 'ok');
-  });
-}
-
-if (btnDisconnect) {
-  btnDisconnect.addEventListener('click', () => {
-    connected = false;
-    setConnUI();
-    setTxStatus('link down', 'bad');
+if (btnBleToggle) {
+  btnBleToggle.addEventListener('click', async () => {
+    if (bleConnecting) return;
+    if (connected) {
+      disconnectBleWeb();
+      return;
+    }
+    await connectBleWeb();
   });
 }
 
@@ -931,13 +1033,18 @@ if (micAfbToggle) {
   });
 }
 
-drcParams.forEach((el) => {
-  el.addEventListener('input', () => {
-    updateDrcCurve();
-    sendTx(`drc_${el.id}_${el.value}`);
+function bindDrcEvents(side, params) {
+  params.forEach((el) => {
+    el.addEventListener('input', () => {
+      updateDrcCurve(side);
+      sendTx(`drc_${el.id}_${el.value}`);
+    });
+    el.addEventListener('change', () => updateDrcCurve(side));
   });
-  el.addEventListener('change', () => updateDrcCurve());
-});
+}
+
+bindDrcEvents('l', drcParams);
+bindDrcEvents('r', drcParamsR);
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
@@ -1016,8 +1123,11 @@ syncBandChipUI('r');
 syncBandChipUI('sub');
 syncBandChipUI('mic1');
 syncBandChipUI('mic2');
-updateDrcCurve();
+updateDrcCurve('l');
+updateDrcCurve('r');
 setConnUI();
+setBleToggleUI();
+setBleLinkState('Chưa kết nối BLE Web', 'bad');
 initRangeLiveValues();
 renderFreqAxis('l');
 renderFreqAxis('r');

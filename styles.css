@@ -55,7 +55,7 @@ body.drag-scroll-lock {
 
 .topbar {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
   gap: 10px 14px;
   padding: 11px 14px;
@@ -76,7 +76,7 @@ body.drag-scroll-lock {
 }
 .topbar-brand {
   display: grid;
-  gap: 1px;
+  gap: 0;
   min-width: 0;
 }
 .topbar h1 {
@@ -96,18 +96,18 @@ body.drag-scroll-lock {
   font-weight: 500;
 }
 .topbar-panel-title {
-  margin-top: 4px;
+  margin-top: 0;
   display: inline-flex;
   align-items: center;
   width: fit-content;
-  padding: 3px 11px;
+  padding: 6px 14px;
   border: 1px solid rgba(85, 182, 245, 0.62);
   border-radius: 999px;
   background: linear-gradient(180deg, rgba(16, 36, 63, 0.96), rgba(10, 24, 44, 0.96));
   color: #eaf8ff;
-  font-size: clamp(11.5px, 1.05vw, 13.5px);
+  font-size: clamp(16px, 2vw, 20px);
   font-weight: 700;
-  letter-spacing: 0.15px;
+  letter-spacing: 0.3px;
   box-shadow:
     inset 0 1px 0 rgba(169, 229, 255, 0.18),
     0 0 0 1px rgba(59, 172, 247, 0.16);
@@ -1051,7 +1051,8 @@ button.danger {
   stroke-dasharray: 2.2 2.2;
   opacity: 0.85;
 }
-#drc-curve {
+#drc-curve,
+#drc-curve-r {
   fill: none;
   stroke: #47d1ff;
   stroke-width: 0.85;
@@ -1226,6 +1227,29 @@ button.danger {
   gap: 8px;
   flex-wrap: wrap;
 }
+.connect-row {
+  justify-content: center;
+}
+#btn-ble-toggle {
+  min-height: 100px;
+  width: min(100%, 360px);
+  padding: 20px 34px;
+  border-radius: 18px;
+  font-size: 30px;
+  font-weight: 700;
+}
+.ble-link-state {
+  margin: 10px 0 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #9dc8ef;
+}
+.ble-link-state.ok {
+  color: #8ff1c9;
+}
+.ble-link-state.bad {
+  color: #ffb5c5;
+}
 .mt-10 { margin-top: 10px; }
 .bottom-bar {
   position: fixed;
@@ -1318,8 +1342,8 @@ button.danger {
     font-size: 13px;
   }
   .topbar-panel-title {
-    font-size: 12px;
-    padding: 3px 8px;
+    font-size: 17px;
+    padding: 5px 12px;
   }
   .status-wrap {
     gap: 6px;
@@ -1412,9 +1436,9 @@ button.danger {
     font-size: 11px;
   }
   .topbar-panel-title {
-    margin-top: 2px;
-    font-size: 10px;
-    padding: 2px 8px;
+    margin-top: 0;
+    font-size: 16px;
+    padding: 5px 10px;
   }
   .status-wrap {
     justify-content: flex-start;
@@ -1707,6 +1731,10 @@ button.danger {
 }
 
 @media (max-width: 420px) {
+  .topbar-panel-title {
+    font-size: 15px;
+    padding: 4px 10px;
+  }
   .topbar h1 {
     font-size: 24px;
   }
@@ -1787,7 +1815,7 @@ button.danger {
     width: 140px;
   }
   .mic-fx-card .dyn-faders.fx-four {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
   .tiny-toggle {
     min-width: 66px;
