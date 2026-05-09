@@ -1,4 +1,4 @@
-const tabs = document.querySelectorAll('.tab');
+﻿const tabs = document.querySelectorAll('.tab');
 const panels = document.querySelectorAll('.panel');
 const btnSave = document.getElementById('btn-save');
 const btnBleToggle = document.getElementById('btn-ble-toggle');
@@ -16,6 +16,8 @@ const topbarPanelTitle = document.getElementById('topbar-panel-title');
 const pwaBar = document.getElementById('pwa-bar');
 const btnPwaInstall = document.getElementById('btn-pwa-install');
 const btnPwaClose = document.getElementById('btn-pwa-close');
+const rxLogBox = document.getElementById('rx-log-box');
+const btnLogClear = document.getElementById('btn-log-clear');
 const PWA_BAR_CLOSED_KEY = 'pwa_bar_closed';
 const preampBandChipsL = document.querySelectorAll('#ch-l .band-chip[data-band]');
 const preampBandChipsR = document.querySelectorAll('#ch-r .band-chip[data-band]');
@@ -67,6 +69,8 @@ let pwaBarClosedByUser = localStorage.getItem(PWA_BAR_CLOSED_KEY) === '1';
 let bleDevice = null;
 let bleServer = null;
 let bleConnecting = false;
+let bleRxCharacteristic = null;
+const rxLogLines = [];
 const DB_MIN = -12;
 const DB_MAX = 12;
 const CHART_H = 30;
@@ -196,7 +200,7 @@ function setConnUI() {
 
 function setBleLinkState(text, mode = 'normal') {
   if (!bleLinkState) return;
-  bleLinkState.textContent = `Trạng thái kết nối: ${text}`;
+  bleLinkState.textContent = `Tráº¡ng thÃ¡i káº¿t ná»‘i: ${text}`;
   bleLinkState.classList.remove('ok', 'bad');
   if (mode === 'ok') bleLinkState.classList.add('ok');
   if (mode === 'bad') bleLinkState.classList.add('bad');
@@ -205,22 +209,22 @@ function setBleLinkState(text, mode = 'normal') {
 function setBleToggleUI() {
   if (!btnBleToggle) return;
   if (bleConnecting) {
-    btnBleToggle.textContent = 'Đang kết nối...';
+    btnBleToggle.textContent = 'Äang káº¿t ná»‘i...';
     btnBleToggle.disabled = true;
     btnBleToggle.classList.remove('danger');
     return;
   }
   btnBleToggle.disabled = false;
   if (connected) {
-    btnBleToggle.textContent = 'Ngắt kết nối';
+    btnBleToggle.textContent = 'Ngáº¯t káº¿t ná»‘i';
     btnBleToggle.classList.add('danger');
   } else {
-    btnBleToggle.textContent = 'Kết nối';
+    btnBleToggle.textContent = 'Káº¿t ná»‘i';
     btnBleToggle.classList.remove('danger');
   }
 }
 
-function applyBleDisconnectedState(text = 'Chưa kết nối BLE Web') {
+function applyBleDisconnectedState(text = 'ChÆ°a káº¿t ná»‘i BLE Web') {
   connected = false;
   bleServer = null;
   setConnUI();
@@ -229,24 +233,32 @@ function applyBleDisconnectedState(text = 'Chưa kết nối BLE Web') {
 }
 
 function handleBleDisconnected() {
-  applyBleDisconnectedState('Đã ngắt kết nối BLE Web');
+  detachBleRxNotifications();
+  appendRxLog('BLE disconnected');
+  applyBleDisconnectedState('ÄÃ£ ngáº¯t káº¿t ná»‘i BLE Web');
   setTxStatus('link down', 'bad');
 }
 
 async function connectBleWeb() {
   if (!navigator.bluetooth) {
-    setBleLinkState('Trình duyệt không hỗ trợ BLE Web', 'bad');
+    setBleLinkState('TrÃ¬nh duyá»‡t khÃ´ng há»— trá»£ BLE Web', 'bad');
     setTxStatus('BLE Web unsupported', 'bad');
     return;
   }
   bleConnecting = true;
   setBleToggleUI();
-  setBleLinkState('Đang kết nối BLE Web...');
+  setBleLinkState('Äang káº¿t ná»‘i BLE Web...');
   setTxStatus('connecting...', 'warn');
   try {
+    const optionalServices = [
+      'battery_service',
+      '6e400001-b5a3-f393-e0a9-e50e24dcca9e',
+      '0000ffe0-0000-1000-8000-00805f9b34fb',
+      '0000ab00-0000-1000-8000-00805f9b34fb',
+    ];
     const device = await navigator.bluetooth.requestDevice({
       acceptAllDevices: true,
-      optionalServices: ['battery_service'],
+      optionalServices,
     });
     if (!device) throw new Error('No BLE device selected');
 
@@ -264,12 +276,16 @@ async function connectBleWeb() {
     setConnUI();
     setBleToggleUI();
     const name = bleDevice.name || bleNameInput?.value || 'Unknown';
-    setBleLinkState(`Đã kết nối BLE: ${name}`, 'ok');
+    setBleLinkState(`ÄÃ£ káº¿t ná»‘i BLE: ${name}`, 'ok');
     setTxStatus('link up', 'ok');
+    appendRxLog(`BLE connected: ${name}`);
+    const rxReady = await bindBleRxNotifications();
+    if (!rxReady) appendRxLog('RX notify characteristic not found');
   } catch (error) {
     const isCancelled = error?.name === 'NotFoundError';
-    applyBleDisconnectedState(isCancelled ? 'Bạn chưa chọn thiết bị BLE' : 'Kết nối BLE thất bại');
+    applyBleDisconnectedState(isCancelled ? 'Báº¡n chÆ°a chá»n thiáº¿t bá»‹ BLE' : 'Káº¿t ná»‘i BLE tháº¥t báº¡i');
     setTxStatus(isCancelled ? 'cancel connect' : 'connect fail', isCancelled ? 'warn' : 'bad');
+    appendRxLog(`BLE connect failed: ${error?.message || 'unknown error'}`);
   } finally {
     bleConnecting = false;
     setBleToggleUI();
@@ -278,9 +294,11 @@ async function connectBleWeb() {
 
 function disconnectBleWeb() {
   if (bleDevice && bleDevice.gatt?.connected) {
+    appendRxLog('Disconnect requested');
     bleDevice.gatt.disconnect();
     return;
   }
+  detachBleRxNotifications();
   applyBleDisconnectedState();
   setTxStatus('link down', 'bad');
 }
@@ -292,6 +310,85 @@ function setTxStatus(text, mode = 'normal') {
   if (mode === 'ok') txState.classList.add('ok');
   if (mode === 'warn') txState.classList.add('warn');
   if (mode === 'bad') txState.classList.add('bad');
+}
+
+function formatLogTime() {
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mm = String(now.getMinutes()).padStart(2, '0');
+  const ss = String(now.getSeconds()).padStart(2, '0');
+  const ms = String(now.getMilliseconds()).padStart(3, '0');
+  return `${hh}:${mm}:${ss}.${ms}`;
+}
+
+function appendRxLog(message) {
+  if (!rxLogBox) return;
+  rxLogLines.push(`[${formatLogTime()}] ${message}`);
+  if (rxLogLines.length > 500) rxLogLines.shift();
+  rxLogBox.textContent = rxLogLines.join('\n');
+  rxLogBox.scrollTop = rxLogBox.scrollHeight;
+}
+
+function clearRxLog() {
+  rxLogLines.length = 0;
+  if (!rxLogBox) return;
+  rxLogBox.textContent = '[cleared]';
+}
+
+function decodeRxValue(dataView) {
+  if (!dataView || !dataView.byteLength) return '';
+  const bytes = new Uint8Array(dataView.buffer, dataView.byteOffset, dataView.byteLength);
+  let text = '';
+  try {
+    text = new TextDecoder('utf-8', { fatal: false }).decode(bytes).replace(/\0/g, '').trim();
+  } catch (_) {
+    text = '';
+  }
+  if (text) return text;
+  return Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join(' ');
+}
+
+function handleBleRxNotification(event) {
+  const value = event?.target?.value;
+  const payload = decodeRxValue(value);
+  appendRxLog(`RX ${payload || '(empty)'}`);
+}
+
+function detachBleRxNotifications() {
+  if (!bleRxCharacteristic) return;
+  try {
+    bleRxCharacteristic.removeEventListener('characteristicvaluechanged', handleBleRxNotification);
+    bleRxCharacteristic.stopNotifications().catch(() => {});
+  } catch (_) {
+    // no-op
+  }
+  bleRxCharacteristic = null;
+}
+
+async function bindBleRxNotifications() {
+  if (!bleServer) return false;
+  detachBleRxNotifications();
+
+  const candidates = [
+    { service: '6e400001-b5a3-f393-e0a9-e50e24dcca9e', characteristic: '6e400003-b5a3-f393-e0a9-e50e24dcca9e' },
+    { service: '0000ffe0-0000-1000-8000-00805f9b34fb', characteristic: '0000ffe1-0000-1000-8000-00805f9b34fb' },
+    { service: '0000ab00-0000-1000-8000-00805f9b34fb', characteristic: '0000ab02-0000-1000-8000-00805f9b34fb' },
+  ];
+
+  for (const item of candidates) {
+    try {
+      const service = await bleServer.getPrimaryService(item.service);
+      const characteristic = await service.getCharacteristic(item.characteristic);
+      await characteristic.startNotifications();
+      characteristic.addEventListener('characteristicvaluechanged', handleBleRxNotification);
+      bleRxCharacteristic = characteristic;
+      appendRxLog(`RX notify ready (${item.characteristic.slice(0, 8)}...)`);
+      return true;
+    } catch (_) {
+      // Try next known service/characteristic pair.
+    }
+  }
+  return false;
 }
 
 function sendTx(tag) {
@@ -829,6 +926,31 @@ if (btnBleToggle) {
   });
 }
 
+if (btnLogClear) {
+  btnLogClear.addEventListener('click', () => {
+    clearRxLog();
+    appendRxLog('Log cleared by user');
+  });
+}
+
+window.pushChipRxLog = (payload) => {
+  if (payload == null) {
+    appendRxLog('RX (null)');
+    return;
+  }
+  if (typeof payload === 'string') {
+    appendRxLog(`RX ${payload}`);
+    return;
+  }
+  try {
+    appendRxLog(`RX ${JSON.stringify(payload)}`);
+  } catch (_) {
+    appendRxLog('RX [unserializable payload]');
+  }
+};
+
+window.clearChipRxLog = () => clearRxLog();
+
 if (eqPresetSel) {
   eqPresetSel.addEventListener('change', () => {
     sendTx(`preset_${eqPresetSel.value}`);
@@ -1014,7 +1136,7 @@ function syncSubPhaseUI(phaseDeg) {
   subPhaseToggle.setAttribute('aria-pressed', is180 ? 'true' : 'false');
   subPhaseToggle.querySelector('.phase-label-0')?.classList.toggle('is-active', !is180);
   subPhaseToggle.querySelector('.phase-label-180')?.classList.toggle('is-active', is180);
-  if (subPhaseState) subPhaseState.textContent = `Current: ${is180 ? '180°' : '0°'}`;
+  if (subPhaseState) subPhaseState.textContent = `Current: ${is180 ? '180Â°' : '0Â°'}`;
 }
 
 function syncSubModeUI(mode) {
@@ -1149,7 +1271,8 @@ updateDrcCurve('l');
 updateDrcCurve('r');
 setConnUI();
 setBleToggleUI();
-setBleLinkState('Chưa kết nối BLE Web', 'bad');
+setBleLinkState('ChÆ°a káº¿t ná»‘i BLE Web', 'bad');
+appendRxLog('System ready. Waiting BLE RX data...');
 initRangeLiveValues();
 renderFreqAxis('l');
 renderFreqAxis('r');
@@ -1166,4 +1289,6 @@ renderPreampRows('r');
 renderPreampRows('sub');
 renderPreampRows('mic1');
 renderPreampRows('mic2');
+
+
 
